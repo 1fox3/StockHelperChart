@@ -3,11 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:gravity="center"
+    android:orientation="vertical"
     tools:context=".activity.MinuteKLineActivity">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/minuteKLine"/>
+
+    <com.fox.stockhelperchart.chart.MinuteBarChart
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/zero_margin"
+        android:layout_weight="2" />
+
+    <com.fox.stockhelperchart.chart.MinuteLineChart
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/zero_margin"
+        android:layout_weight="1" />
 </LinearLayout>

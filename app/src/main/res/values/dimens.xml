@@ -1,0 +1,4 @@
+<resources>
+    <!--普通组件间隔距离-->
+    <dimen name="zero_margin">0dp</dimen>
+</resources>
