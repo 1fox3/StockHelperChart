@@ -11,16 +11,16 @@ import com.github.mikephil.charting.charts.BarChart;
  * @author lusongsong
  * @date 2021/2/26 15:09
  */
-public class MinuteBarChart extends BarChart {
-    public MinuteBarChart(Context context) {
+public class StockMinuteBarChart extends BarChart {
+    public StockMinuteBarChart(Context context) {
         super(context);
     }
 
-    public MinuteBarChart(Context context, AttributeSet attrs) {
+    public StockMinuteBarChart(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public MinuteBarChart(Context context, AttributeSet attrs, int defStyle) {
+    public StockMinuteBarChart(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 }

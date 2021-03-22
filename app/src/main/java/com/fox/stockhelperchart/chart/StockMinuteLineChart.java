@@ -11,16 +11,16 @@ import com.github.mikephil.charting.charts.LineChart;
  * @author lusongsong
  * @date 2021/2/25 18:04
  */
-public class MinuteLineChart extends LineChart {
-    public MinuteLineChart(Context context) {
+public class StockMinuteLineChart extends LineChart {
+    public StockMinuteLineChart(Context context) {
         super(context);
     }
 
-    public MinuteLineChart(Context context, AttributeSet attrs) {
+    public StockMinuteLineChart(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public MinuteLineChart(Context context, AttributeSet attrs, int defStyle) {
+    public StockMinuteLineChart(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 }
