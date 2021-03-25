@@ -11,4 +11,7 @@
     <color name="chartBorder">#BFBDBD</color>
     <!--价格线颜色-->
     <color name="priceLine">#454141</color>
+    <!--MarkerView颜色-->
+    <color name="markerViewStrBg">#406ebc</color>
+    <color name="markerViewStrText">#FFFFFF</color>
 </resources>

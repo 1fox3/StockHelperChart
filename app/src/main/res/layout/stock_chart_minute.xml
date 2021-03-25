@@ -9,10 +9,10 @@
         android:layout_height="@dimen/zero_margin"
         android:layout_weight="2"/>
 
-<!--    <com.fox.stockhelperchart.chart.StockMinuteBarChart-->
-<!--        android:id="@+id/stockMinuteBarChart"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="@dimen/zero_margin"-->
-<!--        android:layout_weight="1" />-->
+    <com.fox.stockhelperchart.chart.StockMinuteBarChart
+        android:id="@+id/stockMinuteBarChart"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/zero_margin"
+        android:layout_weight="1" />
 
 </LinearLayout>

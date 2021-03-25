@@ -1,4 +1,6 @@
 <resources>
     <!--普通组件间隔距离-->
     <dimen name="zero_margin">0dp</dimen>
+    <!--MarketView字体大小-->
+    <dimen name="markerViewStrTextSize">10dp</dimen>
 </resources>

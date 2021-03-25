@@ -7,13 +7,16 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.fox.stockhelperchart.chart.StockMinuteBarChart;
 import com.fox.stockhelperchart.chart.StockMinuteLineChart;
 import com.fox.stockhelperchart.formatter.StockPercentFormatter;
 import com.fox.stockhelperchart.formatter.StockPriceFormatter;
 import com.fox.stockhelperchart.formatter.StockXAxisFormatter;
+import com.fox.stockhelperchart.renderer.StockBarYAxisRenderer;
 import com.fox.stockhelperchart.renderer.StockXAxisRenderer;
 import com.fox.stockhelperchart.renderer.StockYAxisRenderer;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -23,6 +26,8 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,9 +51,17 @@ public class StockMinuteChart extends BaseStockChart {
      */
     public static int Y_NODE_COUNT = 130;
     /**
-     * Y轴默认显示的刻度数
+     * X轴默认显示的刻度数
      */
-    public static int Y_LABEL_COUNT = 5;
+    public static int X_LABEL_COUNT = 5;
+    /**
+     * 线图Y轴默认显示的刻度数
+     */
+    public static int LINE_Y_LABEL_COUNT = 5;
+    /**
+     * 柱图Y轴默认显示的刻度数
+     */
+    public static int BAR_Y_LABEL_COUNT = 3;
     /**
      * Y轴左侧最大值
      */
@@ -87,8 +100,8 @@ public class StockMinuteChart extends BaseStockChart {
     /**
      * 分钟柱图数据
      */
-//    @BindView(R.id.stockMinuteBarChart)
-//    StockMinuteBarChart barChart;
+    @BindView(R.id.stockMinuteBarChart)
+    StockMinuteBarChart barChart;
     /**
      * 柱图X轴
      */
@@ -136,10 +149,12 @@ public class StockMinuteChart extends BaseStockChart {
         super.initChart();
         //绑定视图
         bindLayout();
+        //设置数据选择监听器
+        setValueSelectedListener();
         //初始化线图
         initLineChart();
         //初始化柱图
-//        initBarChart();
+        initBarChart();
     }
 
     /**
@@ -180,9 +195,10 @@ public class StockMinuteChart extends BaseStockChart {
         lineX.setDrawLabels(true);
         //X轴显示网格线
         lineX.setDrawGridLines(true);
-        //X轴设置对大的显示点数
+        //X轴设置最大的显示点数
         lineX.setAxisMaximum(X_NODE_COUNT);
-        lineX.setLabelCount(5, true);
+        //设置默认值显示的刻度数量
+        lineX.setLabelCount(X_LABEL_COUNT, true);
         //设置X轴渲染器
         StockXAxisRenderer stockXAxisRenderer = new StockXAxisRenderer(
                 lineChart.getViewPortHandler(),
@@ -206,8 +222,8 @@ public class StockMinuteChart extends BaseStockChart {
         lineLeftY.setAxisMaximum(LEFT_Y_VALUE_MAX);
         //Y轴不显示网格线
         lineLeftY.setDrawGridLines(true);
-        //默认值显示3个刻度
-        lineLeftY.setLabelCount(Y_LABEL_COUNT, true);
+        //设置默认值显示的刻度数量
+        lineLeftY.setLabelCount(LINE_Y_LABEL_COUNT, true);
         //设置左Y轴渲染器
         StockYAxisRenderer stockYAxisRenderer = new StockYAxisRenderer(
                 lineChart.getViewPortHandler(),
@@ -243,8 +259,8 @@ public class StockMinuteChart extends BaseStockChart {
         zeroLimitLine.enableDashedLine(10f,10f, 0);
         zeroLimitLine.setLineColor(borderColor);
         lineRightY.addLimitLine(zeroLimitLine);
-        //默认值显示3个刻度
-        lineRightY.setLabelCount(Y_LABEL_COUNT, true);
+        //设置默认值显示的刻度数量
+        lineRightY.setLabelCount(LINE_Y_LABEL_COUNT, true);
         //设置右Y轴渲染器
         StockYAxisRenderer stockYAxisRenderer = new StockYAxisRenderer(
                 lineChart.getViewPortHandler(),
@@ -262,39 +278,116 @@ public class StockMinuteChart extends BaseStockChart {
         );
     }
 
-//    /**
-//     * 初始化柱图
-//     */
-//    private void initBarChart() {
-//        //设置边框颜色
-//        barChart.setBorderColor(borderColor);
-//        barChart.setNoDataText(NO_DATA_STR);
-//        barChart.setData(getTestBarData());
-//        initBarXAxis();
-//        initBarLeftYAxis();
-//        initBarRightYAxis();
-//    }
-//
-//    /**
-//     * 初始化柱图X轴
-//     */
-//    private void initBarXAxis() {
-//        barX = barChart.getXAxis();
-//    }
-//
-//    /**
-//     * 初始化柱图左Y轴
-//     */
-//    private void initBarLeftYAxis() {
-//        barLeftY = barChart.getAxisLeft();
-//    }
-//
-//    /**
-//     * 初始化柱图右Y轴
-//     */
-//    private void initBarRightYAxis() {
-//        barRightY = barChart.getAxisRight();
-//    }
+    /**
+     * 初始化柱图
+     */
+    private void initBarChart() {
+        //设置边框颜色
+        barChart.setBorderColor(borderColor);
+        //设置无数据时显示的文案
+        barChart.setNoDataText(NO_DATA_STR);
+        //不显示线图描述文案
+        Description description = new Description();
+        description.setEnabled(false);
+        barChart.setDescription(description);
+        //不显示数据集合名称
+        barChart.getLegend().setEnabled(false);
+        //初始化柱图X轴
+        initBarXAxis();
+        //初始化柱图左Y轴
+        initBarLeftYAxis();
+        //初始化柱图右Y轴
+        initBarRightYAxis();
+        //设置数据
+        barChart.setData(getTestBarData());
+    }
+
+    /**
+     * 初始化柱图X轴
+     */
+    private void initBarXAxis() {
+        barX = barChart.getXAxis();
+        //设置默认值显示的刻度数量
+        barX.setLabelCount(X_LABEL_COUNT, true);
+        //不显示刻度值
+        barX.setDrawLabels(false);
+        //X轴设置最大的显示点数
+        barX.setAxisMaximum(X_NODE_COUNT);
+    }
+
+    /**
+     * 初始化柱图左Y轴
+     */
+    private void initBarLeftYAxis() {
+        barLeftY = barChart.getAxisLeft();
+        //设置默认值显示的刻度数量
+        barLeftY.setLabelCount(BAR_Y_LABEL_COUNT, true);
+        //不显示刻度值
+        barLeftY.setDrawLabels(true);
+        barLeftY.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+        //设置左Y轴渲染器
+        StockBarYAxisRenderer stockYAxisRenderer = new StockBarYAxisRenderer(
+                barChart.getViewPortHandler(),
+                barLeftY,
+                barChart.getTransformer(YAxis.AxisDependency.LEFT)
+        );
+        //设置左Y轴刻度值
+        String[] labelArr = new String[BAR_Y_LABEL_COUNT];
+        for (int i = 0; i < BAR_Y_LABEL_COUNT; i++) {
+            if (i == 0) {
+                labelArr[i]= "万手";
+            } else if (i == BAR_Y_LABEL_COUNT - 1) {
+                labelArr[i] = "1234";
+            } else {
+                labelArr[i] = "";
+            }
+        }
+        stockYAxisRenderer.setLabels(labelArr);
+        barChart.setRendererLeftYAxis(stockYAxisRenderer);
+    }
+
+    /**
+     * 初始化柱图右Y轴
+     */
+    private void initBarRightYAxis() {
+        barRightY = barChart.getAxisRight();
+        //设置默认值显示的刻度数量
+        barRightY.setLabelCount(BAR_Y_LABEL_COUNT, true);
+        //不显示刻度值
+        barRightY.setDrawLabels(false);
+    }
+
+    /**
+     * 设置数值选择监听器
+     */
+    private void setValueSelectedListener() {
+        lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                lineChart.highlightValue(h);
+                System.out.println(h.getX() + ":" + h.getDataSetIndex() + ":" + -1);
+                barChart.highlightValue(new Highlight(h.getX(), h.getDataSetIndex(), -1));
+            }
+
+            @Override
+            public void onNothingSelected() {
+                barChart.highlightValues(null);
+            }
+        });
+        barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                System.out.println(h);
+                barChart.highlightValue(h);
+                lineChart.highlightValue(new Highlight(h.getX(), h.getDataSetIndex(), -1));
+            }
+
+            @Override
+            public void onNothingSelected() {
+                lineChart.highlightValues(null);
+            }
+        });
+    }
 
     /**
      * 获取随机值
@@ -320,6 +413,8 @@ public class StockMinuteChart extends BaseStockChart {
         //不显示数值
         lineDataSet.setDrawValues(false);
         lineDataSet.setColor(priceLineColor);
+        //设置数值选择是的颜色
+        lineDataSet.setHighLightColor(colorArr[1]);
         LineData lineData = new LineData(lineDataSet);
         return lineData;
     }
@@ -328,10 +423,18 @@ public class StockMinuteChart extends BaseStockChart {
     private BarData getTestBarData()
     {
         List<BarEntry> lineListEntry = new ArrayList<>(Y_NODE_COUNT);
+        int[] colors = new int[Y_NODE_COUNT];
         for (int i = 0; i < Y_NODE_COUNT; i++) {
             lineListEntry.add(new BarEntry(i, (float) random(LEFT_Y_VALUE_MIN, LEFT_Y_VALUE_MAX)));
+            //对应的颜色
+            colors[i] = colorArr[(int)random(0, 2)];
         }
-        BarData barData = new BarData(new BarDataSet(lineListEntry, "柱图"));
+        BarDataSet barDataSet = new BarDataSet(lineListEntry, "柱图");
+        barDataSet.setColors(colors);
+        //设置数值选择是的颜色
+        barDataSet.setHighLightColor(colorArr[1]);
+        barDataSet.setHighlightEnabled(true);
+        BarData barData = new BarData(barDataSet);
         return barData;
     }
 }
