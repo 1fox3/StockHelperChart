@@ -1,6 +1,7 @@
 package com.fox.stockhelperchart.renderer;
 
 import android.graphics.Canvas;
+import android.graphics.Path;
 
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.renderer.YAxisRenderer;
@@ -72,6 +73,49 @@ public class StockYAxisRenderer extends YAxisRenderer {
                     fixedPosition + xOffset,
                     positions[i * 2 + 1] + yOffset,
                     mAxisLabelPaint);
+        }
+    }
+
+    @Override
+    public void renderGridLines(Canvas c) {
+
+        if (!mYAxis.isEnabled())
+            return;
+
+        if (mYAxis.isDrawGridLinesEnabled()) {
+
+            int clipRestoreCount = c.save();
+            c.clipRect(getGridClippingRect());
+
+            float[] positions = getTransformedPositions();
+
+            mGridPaint.setColor(mYAxis.getGridColor());
+            mGridPaint.setStrokeWidth(mYAxis.getGridLineWidth());
+            mGridPaint.setPathEffect(mYAxis.getGridDashPathEffect());
+
+            Path gridLinePath = mRenderGridLinesPath;
+            gridLinePath.reset();
+
+            System.out.println("asdasd:" + positions.length);
+
+            // draw the grid
+            for (int i = 0; i < positions.length; i += 2) {
+
+                //不画中间的线
+                if (i == (int) ((positions.length - 1) / 2)) {
+                    continue;
+                }
+
+                // draw a path because lines don't support dashing on lower android versions
+                c.drawPath(linePath(gridLinePath, i, positions), mGridPaint);
+                gridLinePath.reset();
+            }
+
+            c.restoreToCount(clipRestoreCount);
+        }
+
+        if (mYAxis.isDrawZeroLineEnabled()) {
+            drawZeroLine(c);
         }
     }
 }

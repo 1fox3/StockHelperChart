@@ -3,14 +3,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.fox.stockhelperchart.chart.StockMinuteLineChart
-        android:id="@+id/stockMinuteLineChart"
+    <com.fox.stockhelperchart.chart.StockSingleDayMinuteLineChart
+        android:id="@+id/stockSingleDayMinuteLineChart"
         android:layout_width="match_parent"
         android:layout_height="@dimen/zero_margin"
         android:layout_weight="2"/>
 
-    <com.fox.stockhelperchart.chart.StockMinuteBarChart
-        android:id="@+id/stockMinuteBarChart"
+    <com.fox.stockhelperchart.chart.StockSingleDayMinuteBarChart
+        android:id="@+id/stockSingleDayMinuteBarChart"
         android:layout_width="match_parent"
         android:layout_height="@dimen/zero_margin"
         android:layout_weight="1" />

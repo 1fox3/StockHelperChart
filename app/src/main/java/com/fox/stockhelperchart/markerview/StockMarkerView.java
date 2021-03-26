@@ -8,8 +8,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.fox.stockhelperchart.R;
-import com.github.mikephil.charting.charts.Chart;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
@@ -18,7 +16,7 @@ import com.github.mikephil.charting.utils.MPPointF;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class StockMinuteLineLeftYAxisMarker extends MarkerView {
+public class StockMarkerView extends MarkerView {
     @BindView(R.id.markerViewStrTV)
     TextView markerViewStrTV;
     /**
@@ -27,7 +25,7 @@ public class StockMinuteLineLeftYAxisMarker extends MarkerView {
      * @param context
      * @param layoutResource the layout resource to use for the MarkerView
      */
-    public StockMinuteLineLeftYAxisMarker(Context context, int layoutResource) {
+    public StockMarkerView(Context context, int layoutResource) {
         super(context, layoutResource);
         View view = LayoutInflater.from(getContext()).inflate(
                 layoutResource, this, true

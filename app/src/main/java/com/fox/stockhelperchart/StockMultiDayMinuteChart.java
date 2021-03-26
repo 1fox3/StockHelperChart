@@ -7,18 +7,12 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import com.fox.stockhelperchart.chart.StockMinuteBarChart;
-import com.fox.stockhelperchart.chart.StockMinuteLineChart;
-import com.fox.stockhelperchart.formatter.StockPercentFormatter;
+import com.fox.stockhelperchart.chart.StockMultiDayMinuteBarChart;
+import com.fox.stockhelperchart.chart.StockMultiDayMinuteLineChart;
 import com.fox.stockhelperchart.formatter.StockPriceFormatter;
-import com.fox.stockhelperchart.formatter.StockXAxisFormatter;
 import com.fox.stockhelperchart.renderer.StockBarYAxisRenderer;
-import com.fox.stockhelperchart.renderer.StockXAxisRenderer;
 import com.fox.stockhelperchart.renderer.StockYAxisRenderer;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
-import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -36,109 +30,30 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * 股票分钟力度数据
- *
  * @author lusongsong
- * @date 2021/2/26 15:54
+ * @date 2021/3/26 18:07
  */
-public class StockMinuteChart extends BaseStockChart {
-    /**
-     * X轴数据量
-     */
-    public static int X_NODE_COUNT = 241;
-    /**
-     * Y轴数据量
-     */
-    public static int Y_NODE_COUNT = 130;
-    /**
-     * X轴默认显示的刻度数
-     */
-    public static int X_LABEL_COUNT = 5;
-    /**
-     * 线图Y轴默认显示的刻度数
-     */
-    public static int LINE_Y_LABEL_COUNT = 5;
-    /**
-     * 柱图Y轴默认显示的刻度数
-     */
-    public static int BAR_Y_LABEL_COUNT = 3;
-    /**
-     * Y轴左侧最大值
-     */
-    public static int LEFT_Y_VALUE_MAX = 100;
-    /**
-     * Y轴左侧最小值
-     */
-    public static int LEFT_Y_VALUE_MIN = 80;
-    /**
-     * Y轴右侧最大值
-     */
-    public static int RIGHT_Y_VALUE_MAX = 10;
-    /**
-     * Y轴右侧最小值
-     */
-    public static int RIGHT_Y_VALUE_MIN = -10;
+public class StockMultiDayMinuteChart extends BaseStockChart {
+    @BindView(R.id.stockMultiDayMinuteLineChart)
+    StockMultiDayMinuteLineChart lineChart;
 
-    /**
-     * 分钟线图数据
-     */
-    @BindView(R.id.stockMinuteLineChart)
-    StockMinuteLineChart lineChart;
-    /**
-     * 线图X轴
-     */
-    XAxis lineX;
-    /**
-     * 线图左Y轴
-     */
-    YAxis lineLeftY;
-    /**
-     * 线图右Y轴
-     */
-    YAxis lineRightY;
+    @BindView(R.id.stockMultiDayMinuteBarChart)
+    StockMultiDayMinuteBarChart barChart;
 
-    /**
-     * 分钟柱图数据
-     */
-    @BindView(R.id.stockMinuteBarChart)
-    StockMinuteBarChart barChart;
-    /**
-     * 柱图X轴
-     */
-    XAxis barX;
-    /**
-     * 柱图左Y轴
-     */
-    YAxis barLeftY;
-    /**
-     * 柱图右Y轴
-     */
-    YAxis barRightY;
-
-    public StockMinuteChart(Context context) {
+    public StockMultiDayMinuteChart(Context context) {
         super(context);
     }
 
-    public StockMinuteChart(Context context, @Nullable AttributeSet attrs) {
+    public StockMultiDayMinuteChart(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public StockMinuteChart(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public StockMultiDayMinuteChart(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public StockMinuteChart(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public StockMultiDayMinuteChart(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-    }
-
-    /**
-     * 绑定布局文件
-     */
-    private void bindLayout() {
-        View view = LayoutInflater.from(getContext()).inflate(
-                R.layout.stock_chart_minute, this, true
-        );
-        ButterKnife.bind(this, view);
     }
 
     /**
@@ -158,30 +73,27 @@ public class StockMinuteChart extends BaseStockChart {
     }
 
     /**
+     * 绑定布局文件
+     */
+    private void bindLayout() {
+        View view = LayoutInflater.from(getContext()).inflate(
+                R.layout.stock_multi_day_minute_chart, this, true
+        );
+        ButterKnife.bind(this, view);
+    }
+
+    /**
      * 初始化线图
      */
     private void initLineChart() {
-        //画外框线
-        lineChart.setDrawBorders(true);
-        //设置边框颜色
-        lineChart.setBorderColor(borderColor);
-        //设置无数据时的显示文案
-        lineChart.setNoDataText(NO_DATA_STR);
-        //不显示线图描述文案
-        Description description = new Description();
-        description.setEnabled(false);
-        lineChart.setDescription(description);
-        //不显示数据集合名称
-        lineChart.getLegend().setEnabled(false);
-        //设置显示数据
-        lineChart.setData(getTestLineData());
-
         //初始化线图X轴
         initLineXAxis();
         //初始化线图左Y轴
         initLineLeftYAxis();
         //初始化线图右Y轴
         initLineRightYAxis();
+        //设置显示数据
+        lineChart.setData(getTestLineData());
     }
 
     /**
@@ -189,24 +101,10 @@ public class StockMinuteChart extends BaseStockChart {
      */
     private void initLineXAxis() {
         lineX = lineChart.getXAxis();
-        //X轴显示在2边
-        lineX.setPosition(XAxis.XAxisPosition.BOTTOM);
-        //X轴不显示坐标
-        lineX.setDrawLabels(true);
-        //X轴显示网格线
-        lineX.setDrawGridLines(true);
         //X轴设置最大的显示点数
         lineX.setAxisMaximum(X_NODE_COUNT);
         //设置默认值显示的刻度数量
         lineX.setLabelCount(X_LABEL_COUNT, true);
-        //设置X轴渲染器
-        StockXAxisRenderer stockXAxisRenderer = new StockXAxisRenderer(
-                lineChart.getViewPortHandler(),
-                lineX,
-                lineChart.getTransformer(YAxis.AxisDependency.LEFT)
-        );
-        lineChart.setXAxisRenderer(stockXAxisRenderer);
-        lineX.setValueFormatter(new StockXAxisFormatter());
     }
 
     /**
@@ -246,17 +144,13 @@ public class StockMinuteChart extends BaseStockChart {
      */
     private void initLineRightYAxis() {
         lineRightY = lineChart.getAxisRight();
-        //右Y轴显示在图标内部
-        lineRightY.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         //设置右Y轴的最小值
         lineRightY.setAxisMinimum(RIGHT_Y_VALUE_MIN);
         //设置右Y轴的最大值
         lineRightY.setAxisMaximum(RIGHT_Y_VALUE_MAX);
-        //Y轴不显示网格线
-        lineRightY.setDrawGridLines(false);
         //添加增幅为0的提示线
         LimitLine zeroLimitLine = new LimitLine(0);
-        zeroLimitLine.enableDashedLine(10f,10f, 0);
+        zeroLimitLine.enableDashedLine(10f, 10f, 0);
         zeroLimitLine.setLineColor(borderColor);
         lineRightY.addLimitLine(zeroLimitLine);
         //设置默认值显示的刻度数量
@@ -270,12 +164,6 @@ public class StockMinuteChart extends BaseStockChart {
         stockYAxisRenderer.setLabelColorArr(colorArr);
         stockYAxisRenderer.setFlatValue(0);
         lineChart.setRendererRightYAxis(stockYAxisRenderer);
-        //设置右Y轴数值格式器
-        lineRightY.setValueFormatter(
-                new StockPercentFormatter()
-                        .setNumberFormatter(false)
-                        .initFormatter()
-        );
     }
 
     /**
@@ -286,12 +174,6 @@ public class StockMinuteChart extends BaseStockChart {
         barChart.setBorderColor(borderColor);
         //设置无数据时显示的文案
         barChart.setNoDataText(NO_DATA_STR);
-        //不显示线图描述文案
-        Description description = new Description();
-        description.setEnabled(false);
-        barChart.setDescription(description);
-        //不显示数据集合名称
-        barChart.getLegend().setEnabled(false);
         //初始化柱图X轴
         initBarXAxis();
         //初始化柱图左Y轴
@@ -309,8 +191,6 @@ public class StockMinuteChart extends BaseStockChart {
         barX = barChart.getXAxis();
         //设置默认值显示的刻度数量
         barX.setLabelCount(X_LABEL_COUNT, true);
-        //不显示刻度值
-        barX.setDrawLabels(false);
         //X轴设置最大的显示点数
         barX.setAxisMaximum(X_NODE_COUNT);
     }
@@ -322,9 +202,6 @@ public class StockMinuteChart extends BaseStockChart {
         barLeftY = barChart.getAxisLeft();
         //设置默认值显示的刻度数量
         barLeftY.setLabelCount(BAR_Y_LABEL_COUNT, true);
-        //不显示刻度值
-        barLeftY.setDrawLabels(true);
-        barLeftY.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         //设置左Y轴渲染器
         StockBarYAxisRenderer stockYAxisRenderer = new StockBarYAxisRenderer(
                 barChart.getViewPortHandler(),
@@ -335,7 +212,7 @@ public class StockMinuteChart extends BaseStockChart {
         String[] labelArr = new String[BAR_Y_LABEL_COUNT];
         for (int i = 0; i < BAR_Y_LABEL_COUNT; i++) {
             if (i == 0) {
-                labelArr[i]= "万手";
+                labelArr[i] = "万手";
             } else if (i == BAR_Y_LABEL_COUNT - 1) {
                 labelArr[i] = "1234";
             } else {
@@ -353,8 +230,6 @@ public class StockMinuteChart extends BaseStockChart {
         barRightY = barChart.getAxisRight();
         //设置默认值显示的刻度数量
         barRightY.setLabelCount(BAR_Y_LABEL_COUNT, true);
-        //不显示刻度值
-        barRightY.setDrawLabels(false);
     }
 
     /**
@@ -391,6 +266,7 @@ public class StockMinuteChart extends BaseStockChart {
 
     /**
      * 获取随机值
+     *
      * @param min
      * @param max
      * @return
@@ -399,8 +275,7 @@ public class StockMinuteChart extends BaseStockChart {
         return (float) (Math.random() * (max - min) + min);
     }
 
-    private LineData getTestLineData()
-    {
+    private LineData getTestLineData() {
         List<Entry> lineListEntry = new ArrayList<>(Y_NODE_COUNT);
         for (int i = 0; i < Y_NODE_COUNT; i++) {
             lineListEntry.add(
@@ -420,14 +295,13 @@ public class StockMinuteChart extends BaseStockChart {
     }
 
 
-    private BarData getTestBarData()
-    {
+    private BarData getTestBarData() {
         List<BarEntry> lineListEntry = new ArrayList<>(Y_NODE_COUNT);
         int[] colors = new int[Y_NODE_COUNT];
         for (int i = 0; i < Y_NODE_COUNT; i++) {
             lineListEntry.add(new BarEntry(i, (float) random(LEFT_Y_VALUE_MIN, LEFT_Y_VALUE_MAX)));
             //对应的颜色
-            colors[i] = colorArr[(int)random(0, 2)];
+            colors[i] = colorArr[(int) random(0, 2)];
         }
         BarDataSet barDataSet = new BarDataSet(lineListEntry, "柱图");
         barDataSet.setColors(colors);

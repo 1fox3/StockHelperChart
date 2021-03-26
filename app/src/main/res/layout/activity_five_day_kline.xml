@@ -6,8 +6,9 @@
     android:orientation="vertical"
     android:gravity="center"
     tools:context=".activity.FiveDayKLineActivity">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/fiveDayKLine"/>
+
+    <com.fox.stockhelperchart.StockMultiDayMinuteChart
+        android:id="@+id/stockMultiDayMinuteChart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </LinearLayout>
