@@ -8,7 +8,7 @@ import com.fox.stockhelperchart.formatter.StockPercentFormatter;
 import com.fox.stockhelperchart.formatter.StockPriceFormatter;
 import com.fox.stockhelperchart.formatter.StockXAxisFormatter;
 import com.fox.stockhelperchart.markerview.StockMarkerView;
-import com.fox.stockhelperchart.renderer.StockXAxisRenderer;
+import com.fox.stockhelperchart.renderer.StockMinuteLineXAxisRenderer;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
@@ -83,12 +83,12 @@ public class StockSingleDayMinuteLineChart extends LineChart {
         //X轴显示网格线
         xAxis.setDrawGridLines(true);
         //设置X轴渲染器
-        StockXAxisRenderer stockXAxisRenderer = new StockXAxisRenderer(
+        StockMinuteLineXAxisRenderer stockMinuteLineXAxisRenderer = new StockMinuteLineXAxisRenderer(
                 getViewPortHandler(),
                 xAxis,
                 getTransformer(YAxis.AxisDependency.LEFT)
         );
-        setXAxisRenderer(stockXAxisRenderer);
+        setXAxisRenderer(stockMinuteLineXAxisRenderer);
         //设置X轴Label格式器
         xAxis.setValueFormatter(new StockXAxisFormatter());
     }

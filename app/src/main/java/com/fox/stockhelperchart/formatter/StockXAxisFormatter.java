@@ -10,7 +10,7 @@ import java.util.TreeMap;
  * @date 2021/3/15 18:01
  */
 public class StockXAxisFormatter implements IAxisValueFormatter {
-    private TreeMap<Integer, String> XGridLine = new TreeMap<Integer, String>() {
+    private TreeMap<Integer, String> labelMap = new TreeMap<Integer, String>() {
         {
             put(0, "9:30");
             put(61, "10:30");
@@ -23,8 +23,12 @@ public class StockXAxisFormatter implements IAxisValueFormatter {
     public StockXAxisFormatter() {
     }
 
+    public void setLabels(TreeMap<Integer, String> labels) {
+        labelMap = labels;
+    }
+
     public String getFormattedValue(float value, AxisBase axis) {
-        return XGridLine.get((int)value);
+        return labelMap.get((int)value);
     }
 
 }

@@ -11,7 +11,7 @@ import com.fox.stockhelperchart.chart.StockMultiDayMinuteBarChart;
 import com.fox.stockhelperchart.chart.StockMultiDayMinuteLineChart;
 import com.fox.stockhelperchart.formatter.StockPriceFormatter;
 import com.fox.stockhelperchart.renderer.StockBarYAxisRenderer;
-import com.fox.stockhelperchart.renderer.StockYAxisRenderer;
+import com.fox.stockhelperchart.renderer.StockMinuteLineYAxisRenderer;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -34,6 +34,11 @@ import butterknife.ButterKnife;
  * @date 2021/3/26 18:07
  */
 public class StockMultiDayMinuteChart extends BaseStockChart {
+    /**
+     * 默认展示的天数
+     */
+    public static int DAY_NUM = 5;
+
     @BindView(R.id.stockMultiDayMinuteLineChart)
     StockMultiDayMinuteLineChart lineChart;
 
@@ -102,9 +107,9 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
     private void initLineXAxis() {
         lineX = lineChart.getXAxis();
         //X轴设置最大的显示点数
-        lineX.setAxisMaximum(X_NODE_COUNT);
+        lineX.setAxisMaximum(X_NODE_COUNT * DAY_NUM);
         //设置默认值显示的刻度数量
-        lineX.setLabelCount(X_LABEL_COUNT, true);
+        lineX.setLabelCount(DAY_NUM, true);
     }
 
     /**
@@ -123,14 +128,15 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
         //设置默认值显示的刻度数量
         lineLeftY.setLabelCount(LINE_Y_LABEL_COUNT, true);
         //设置左Y轴渲染器
-        StockYAxisRenderer stockYAxisRenderer = new StockYAxisRenderer(
+        StockMinuteLineYAxisRenderer stockMinuteLineYAxisRenderer = new StockMinuteLineYAxisRenderer(
                 lineChart.getViewPortHandler(),
                 lineLeftY,
                 lineChart.getTransformer(YAxis.AxisDependency.LEFT)
         );
-        stockYAxisRenderer.setLabelColorArr(colorArr);
-        stockYAxisRenderer.setFlatValue((LEFT_Y_VALUE_MAX + LEFT_Y_VALUE_MIN) / 2);
-        lineChart.setRendererLeftYAxis(stockYAxisRenderer);
+        stockMinuteLineYAxisRenderer.setLabelColorArr(colorArr);
+        stockMinuteLineYAxisRenderer.setFlatValue((LEFT_Y_VALUE_MAX + LEFT_Y_VALUE_MIN) / 2);
+        stockMinuteLineYAxisRenderer.setLabelStep(1);
+        lineChart.setRendererLeftYAxis(stockMinuteLineYAxisRenderer);
         //设置右Y轴数值格式器
         lineLeftY.setValueFormatter(
                 new StockPriceFormatter()
@@ -156,14 +162,15 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
         //设置默认值显示的刻度数量
         lineRightY.setLabelCount(LINE_Y_LABEL_COUNT, true);
         //设置右Y轴渲染器
-        StockYAxisRenderer stockYAxisRenderer = new StockYAxisRenderer(
+        StockMinuteLineYAxisRenderer stockMinuteLineYAxisRenderer = new StockMinuteLineYAxisRenderer(
                 lineChart.getViewPortHandler(),
                 lineRightY,
                 lineChart.getTransformer(YAxis.AxisDependency.RIGHT)
         );
-        stockYAxisRenderer.setLabelColorArr(colorArr);
-        stockYAxisRenderer.setFlatValue(0);
-        lineChart.setRendererRightYAxis(stockYAxisRenderer);
+        stockMinuteLineYAxisRenderer.setLabelColorArr(colorArr);
+        stockMinuteLineYAxisRenderer.setFlatValue(0);
+        stockMinuteLineYAxisRenderer.setLabelStep(1);
+        lineChart.setRendererRightYAxis(stockMinuteLineYAxisRenderer);
     }
 
     /**
@@ -240,7 +247,6 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
                 lineChart.highlightValue(h);
-                System.out.println(h.getX() + ":" + h.getDataSetIndex() + ":" + -1);
                 barChart.highlightValue(new Highlight(h.getX(), h.getDataSetIndex(), -1));
             }
 
@@ -252,7 +258,6 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
         barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
-                System.out.println(h);
                 barChart.highlightValue(h);
                 lineChart.highlightValue(new Highlight(h.getX(), h.getDataSetIndex(), -1));
             }

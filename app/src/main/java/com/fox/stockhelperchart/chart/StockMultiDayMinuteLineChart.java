@@ -8,13 +8,17 @@ import com.fox.stockhelperchart.formatter.StockPercentFormatter;
 import com.fox.stockhelperchart.formatter.StockPriceFormatter;
 import com.fox.stockhelperchart.formatter.StockXAxisFormatter;
 import com.fox.stockhelperchart.markerview.StockMarkerView;
-import com.fox.stockhelperchart.renderer.StockXAxisRenderer;
+import com.fox.stockhelperchart.renderer.StockMinuteLineXAxisRenderer;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 
+import java.util.TreeMap;
+
 import static com.fox.stockhelperchart.BaseStockChart.NO_DATA_STR;
+import static com.fox.stockhelperchart.BaseStockChart.X_NODE_COUNT;
+import static com.fox.stockhelperchart.StockMultiDayMinuteChart.DAY_NUM;
 
 /**
  * @author lusongsong
@@ -82,14 +86,33 @@ public class StockMultiDayMinuteLineChart extends LineChart {
         //X轴显示网格线
         xAxis.setDrawGridLines(true);
         //设置X轴渲染器
-        StockXAxisRenderer stockXAxisRenderer = new StockXAxisRenderer(
+        StockMinuteLineXAxisRenderer stockMinuteLineXAxisRenderer = new StockMinuteLineXAxisRenderer(
                 getViewPortHandler(),
                 xAxis,
                 getTransformer(YAxis.AxisDependency.LEFT)
         );
-        setXAxisRenderer(stockXAxisRenderer);
+        int[] gradLinePos = new int[DAY_NUM-1];
+        int[] labelPos = new int[DAY_NUM];
+        TreeMap<Integer, String> labelMap = new TreeMap<>();
+        String gradLinePosStr = "";
+        for (int i = 0; i < DAY_NUM-1; i++) {
+            gradLinePos[i] = X_NODE_COUNT * (i + 1);
+            gradLinePosStr += X_NODE_COUNT * (i + 1);
+            gradLinePosStr += ",";
+        }
+        for (int i = 0; i < DAY_NUM; i++) {
+            labelMap.put(X_NODE_COUNT / 2 + X_NODE_COUNT * i, "21/3/1");
+            labelPos[i] = X_NODE_COUNT / 2 + X_NODE_COUNT * i;
+        }
+        System.out.println("gradLinePos:" + gradLinePosStr);
+        System.out.println("labelPos:" + labelPos);
+        stockMinuteLineXAxisRenderer.setGradLinePos(gradLinePos);
+        stockMinuteLineXAxisRenderer.setLabelPos(labelPos);
+        setXAxisRenderer(stockMinuteLineXAxisRenderer);
         //设置X轴Label格式器
-        xAxis.setValueFormatter(new StockXAxisFormatter());
+        StockXAxisFormatter stockXAxisFormatter = new StockXAxisFormatter();
+        stockXAxisFormatter.setLabels(labelMap);
+        xAxis.setValueFormatter(stockXAxisFormatter);
     }
 
     /**

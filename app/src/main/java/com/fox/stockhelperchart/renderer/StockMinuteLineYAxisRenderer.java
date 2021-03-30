@@ -8,13 +8,13 @@ import com.github.mikephil.charting.renderer.YAxisRenderer;
 import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
-public class StockYAxisRenderer extends YAxisRenderer {
+public class StockMinuteLineYAxisRenderer extends YAxisRenderer {
     protected boolean isLabelValueInside = true;
     protected float flatValue;
     protected int[] labelColorArr;
     protected int labelStep = 2;
 
-    public StockYAxisRenderer(ViewPortHandler viewPortHandler, YAxis yAxis, Transformer trans) {
+    public StockMinuteLineYAxisRenderer(ViewPortHandler viewPortHandler, YAxis yAxis, Transformer trans) {
         super(viewPortHandler, yAxis, trans);
     }
 
@@ -42,6 +42,10 @@ public class StockYAxisRenderer extends YAxisRenderer {
         }
 
         return colorPos < labelColorArr.length ? labelColorArr[colorPos] : 0;
+    }
+
+    public void setLabelStep(int ls) {
+        labelStep = ls;
     }
 
     @Override
@@ -95,8 +99,6 @@ public class StockYAxisRenderer extends YAxisRenderer {
 
             Path gridLinePath = mRenderGridLinesPath;
             gridLinePath.reset();
-
-            System.out.println("asdasd:" + positions.length);
 
             // draw the grid
             for (int i = 0; i < positions.length; i += 2) {

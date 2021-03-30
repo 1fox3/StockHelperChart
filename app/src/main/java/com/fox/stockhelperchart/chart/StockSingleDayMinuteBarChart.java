@@ -4,18 +4,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import com.fox.stockhelperchart.R;
-import com.fox.stockhelperchart.formatter.StockPercentFormatter;
-import com.fox.stockhelperchart.formatter.StockPriceFormatter;
-import com.fox.stockhelperchart.formatter.StockXAxisFormatter;
 import com.fox.stockhelperchart.markerview.StockMarkerView;
 import com.fox.stockhelperchart.renderer.StockBarChartRenderer;
-import com.fox.stockhelperchart.renderer.StockXAxisRenderer;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-
-import static com.fox.stockhelperchart.BaseStockChart.NO_DATA_STR;
 
 /**
  * 股票单天分钟粒度柱状图

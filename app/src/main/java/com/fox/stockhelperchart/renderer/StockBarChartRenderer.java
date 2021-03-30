@@ -74,7 +74,6 @@ public class StockBarChartRenderer extends BarChartRenderer {
             prepareBarHighlight(e.getX(), y1, y2, barData.getBarWidth() / 2f, trans);
 
             setHighlightDrawPos(high, mBarRect);
-            System.out.println(mBarRect.centerX() + ":" + mViewPortHandler.getContentRect().bottom + ":" + mBarRect.centerX() + ":" +  0);
             c.drawLine(0, mBarRect.top, mViewPortHandler.getContentRect().right, mBarRect.top, mHighlightPaint);
             c.drawLine(mBarRect.centerX(), mViewPortHandler.getContentRect().bottom, mBarRect.centerX(), 0, mHighlightPaint);
         }
