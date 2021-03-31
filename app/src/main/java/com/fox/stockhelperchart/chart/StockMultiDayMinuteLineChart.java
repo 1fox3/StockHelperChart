@@ -9,11 +9,14 @@ import com.fox.stockhelperchart.formatter.StockPriceFormatter;
 import com.fox.stockhelperchart.formatter.StockXAxisFormatter;
 import com.fox.stockhelperchart.markerview.StockMarkerView;
 import com.fox.stockhelperchart.renderer.StockMinuteLineXAxisRenderer;
+import com.fox.stockhelperchart.renderer.StockMultiDayMinuteLineChartRenderer;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 
 import static com.fox.stockhelperchart.BaseStockChart.NO_DATA_STR;
@@ -72,6 +75,15 @@ public class StockMultiDayMinuteLineChart extends LineChart {
                 new StockMarkerView(getContext(), R.layout.markerview_str);
         stockMarkerView.setChartView(this);
         setMarker(stockMarkerView);
+        //设置划线渲染器，并指定需要断开的点
+        StockMultiDayMinuteLineChartRenderer stockMultiDayMinuteLineChartRenderer =
+                new StockMultiDayMinuteLineChartRenderer(this, mAnimator, mViewPortHandler);
+        List<Integer> breakPosList = new ArrayList<>(DAY_NUM);
+        for (int i = 0; i < DAY_NUM - 1; i++) {
+            breakPosList.add(X_NODE_COUNT * (i + 1) + 1);
+        }
+        stockMultiDayMinuteLineChartRenderer.setBreakPos(breakPosList);
+        setRenderer(stockMultiDayMinuteLineChartRenderer);
     }
 
     /**
@@ -91,11 +103,11 @@ public class StockMultiDayMinuteLineChart extends LineChart {
                 xAxis,
                 getTransformer(YAxis.AxisDependency.LEFT)
         );
-        int[] gradLinePos = new int[DAY_NUM-1];
+        int[] gradLinePos = new int[DAY_NUM - 1];
         int[] labelPos = new int[DAY_NUM];
         TreeMap<Integer, String> labelMap = new TreeMap<>();
         String gradLinePosStr = "";
-        for (int i = 0; i < DAY_NUM-1; i++) {
+        for (int i = 0; i < DAY_NUM - 1; i++) {
             gradLinePos[i] = X_NODE_COUNT * (i + 1);
             gradLinePosStr += X_NODE_COUNT * (i + 1);
             gradLinePosStr += ",";
@@ -104,8 +116,6 @@ public class StockMultiDayMinuteLineChart extends LineChart {
             labelMap.put(X_NODE_COUNT / 2 + X_NODE_COUNT * i, "21/3/1");
             labelPos[i] = X_NODE_COUNT / 2 + X_NODE_COUNT * i;
         }
-        System.out.println("gradLinePos:" + gradLinePosStr);
-        System.out.println("labelPos:" + labelPos);
         stockMinuteLineXAxisRenderer.setGradLinePos(gradLinePos);
         stockMinuteLineXAxisRenderer.setLabelPos(labelPos);
         setXAxisRenderer(stockMinuteLineXAxisRenderer);

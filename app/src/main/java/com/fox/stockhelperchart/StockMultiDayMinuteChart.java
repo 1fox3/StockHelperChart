@@ -13,6 +13,7 @@ import com.fox.stockhelperchart.formatter.StockPriceFormatter;
 import com.fox.stockhelperchart.renderer.StockBarYAxisRenderer;
 import com.fox.stockhelperchart.renderer.StockMinuteLineYAxisRenderer;
 import com.github.mikephil.charting.components.LimitLine;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -38,6 +39,7 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
      * 默认展示的天数
      */
     public static int DAY_NUM = 5;
+    public static int MULTI_DAY_Y_NODE_COUNT = 4 * X_NODE_COUNT + Y_NODE_COUNT;
 
     @BindView(R.id.stockMultiDayMinuteLineChart)
     StockMultiDayMinuteLineChart lineChart;
@@ -199,7 +201,7 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
         //设置默认值显示的刻度数量
         barX.setLabelCount(X_LABEL_COUNT, true);
         //X轴设置最大的显示点数
-        barX.setAxisMaximum(X_NODE_COUNT);
+        barX.setAxisMaximum(X_NODE_COUNT * DAY_NUM);
     }
 
     /**
@@ -282,7 +284,7 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
 
     private LineData getTestLineData() {
         List<Entry> lineListEntry = new ArrayList<>(Y_NODE_COUNT);
-        for (int i = 0; i < Y_NODE_COUNT; i++) {
+        for (int i = 0; i <Y_NODE_COUNT; i++) {
             lineListEntry.add(
                     new Entry(i, random(LEFT_Y_VALUE_MIN, LEFT_Y_VALUE_MAX))
             );

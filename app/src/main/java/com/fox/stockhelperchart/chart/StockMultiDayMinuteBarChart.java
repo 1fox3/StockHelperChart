@@ -3,7 +3,20 @@ package com.fox.stockhelperchart.chart;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import com.fox.stockhelperchart.R;
+import com.fox.stockhelperchart.formatter.StockXAxisFormatter;
+import com.fox.stockhelperchart.markerview.StockMarkerView;
+import com.fox.stockhelperchart.renderer.StockBarChartRenderer;
+import com.fox.stockhelperchart.renderer.StockMinuteLineXAxisRenderer;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+
+import java.util.TreeMap;
+
+import static com.fox.stockhelperchart.BaseStockChart.X_NODE_COUNT;
+import static com.fox.stockhelperchart.StockMultiDayMinuteChart.DAY_NUM;
 
 /**
  * @author lusongsong
@@ -12,13 +25,102 @@ import com.github.mikephil.charting.charts.BarChart;
 public class StockMultiDayMinuteBarChart extends BarChart {
     public StockMultiDayMinuteBarChart(Context context) {
         super(context);
+        initSelf();
     }
 
     public StockMultiDayMinuteBarChart(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initSelf();
     }
 
     public StockMultiDayMinuteBarChart(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        initSelf();
+    }
+
+    /**
+     * 初始化
+     */
+    protected void initSelf() {
+        initChart();
+        initXAxis();
+        initLeftYAxis();
+        initRightYAxis();
+    }
+
+    /**
+     * 初始化图表
+     */
+    private void initChart() {
+        //不显示线图描述文案
+        Description description = new Description();
+        description.setEnabled(false);
+        setDescription(description);
+        //不显示数据集合名称
+        getLegend().setEnabled(false);
+        //设置渲染器
+        mRenderer = new StockBarChartRenderer(this, mAnimator, mViewPortHandler);
+        //设置提示
+        StockMarkerView stockMarkerView =
+                new StockMarkerView(getContext(), R.layout.markerview_str);
+        stockMarkerView.setChartView(this);
+        setMarker(stockMarkerView);
+    }
+
+    /**
+     * 初始化X轴
+     */
+    private void initXAxis() {
+        XAxis xAxis = getXAxis();
+        //设置位置
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        //不显示刻度值
+//        xAxis.setDrawLabels(false);
+        //设置X轴渲染器
+        StockMinuteLineXAxisRenderer stockMinuteLineXAxisRenderer = new StockMinuteLineXAxisRenderer(
+                getViewPortHandler(),
+                xAxis,
+                getTransformer(YAxis.AxisDependency.LEFT)
+        );
+        int[] gradLinePos = new int[DAY_NUM - 1];
+        int[] labelPos = new int[DAY_NUM];
+        TreeMap<Integer, String> labelMap = new TreeMap<>();
+        String gradLinePosStr = "";
+        for (int i = 0; i < DAY_NUM - 1; i++) {
+            gradLinePos[i] = X_NODE_COUNT * (i + 1);
+            gradLinePosStr += X_NODE_COUNT * (i + 1);
+            gradLinePosStr += ",";
+        }
+        for (int i = 0; i < DAY_NUM; i++) {
+            labelMap.put(X_NODE_COUNT / 2 + X_NODE_COUNT * i, "21/3/1");
+            labelPos[i] = X_NODE_COUNT / 2 + X_NODE_COUNT * i;
+        }
+        stockMinuteLineXAxisRenderer.setGradLinePos(gradLinePos);
+        stockMinuteLineXAxisRenderer.setLabelPos(labelPos);
+        setXAxisRenderer(stockMinuteLineXAxisRenderer);
+        //设置X轴Label格式器
+        StockXAxisFormatter stockXAxisFormatter = new StockXAxisFormatter();
+        stockXAxisFormatter.setLabels(labelMap);
+        xAxis.setValueFormatter(stockXAxisFormatter);
+    }
+
+    /**
+     * 初始化左Y轴
+     */
+    private void initLeftYAxis() {
+        YAxis leftYAxis = getAxisLeft();
+        //不显示刻度值
+        leftYAxis.setDrawLabels(true);
+        //刻度显示再里边
+        leftYAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+    }
+
+    /**
+     * 初始化右Y轴
+     */
+    private void initRightYAxis() {
+        YAxis rightYAxis = getAxisRight();
+        //不显示刻度值
+        rightYAxis.setDrawLabels(false);
     }
 }
