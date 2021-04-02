@@ -16,6 +16,7 @@ import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,15 +85,27 @@ public class StockKLineChart extends BaseStockChart {
         lineChart.setData(getTestLineCombinedData());
     }
 
+    /**
+     * 初始化线图X轴
+     */
     private void initLineXAxis() {
         lineX = lineChart.getXAxis();
+        //设置默认值显示的刻度数量
         lineX.setLabelCount(X_LABEL_COUNT, true);
     }
+
+    /**
+     * 初始化线图左Y轴
+     */
     private void initLineLeftYAxis() {
         lineLeftY = lineChart.getAxisLeft();
         //设置默认值显示的刻度数量
         lineLeftY.setLabelCount(LINE_Y_LABEL_COUNT, true);
     }
+
+    /**
+     * 初始化线图右Y轴
+     */
     private void initLineRightYAxis() {}
 
     /**
@@ -110,10 +123,37 @@ public class StockKLineChart extends BaseStockChart {
         //初始化柱图右Y轴
         initBarRightYAxis();
         barChart.setData(getTestBarCombinedData());
+        //设置与上边无间隔
+        ViewPortHandler viewPortHandler = barChart.getViewPortHandler();
+        barChart.setViewPortOffsets(
+                viewPortHandler.offsetLeft(),
+                0,
+                viewPortHandler.offsetRight(),
+                viewPortHandler.offsetBottom()
+        );
     }
 
-    private void initBarXAxis() {}
-    private void initBarLeftYAxis() {}
+    /**
+     * 初始化柱图X轴
+     */
+    private void initBarXAxis() {
+        barX = barChart.getXAxis();
+        //设置默认值显示的刻度数量
+        barX.setLabelCount(X_LABEL_COUNT, true);
+    }
+
+    /**
+     * 初始化柱图左Y轴
+     */
+    private void initBarLeftYAxis() {
+        barLeftY = barChart.getAxisLeft();
+        //设置默认值显示的刻度数量
+        barLeftY.setLabelCount(BAR_Y_LABEL_COUNT, true);
+    }
+
+    /**
+     * 初始化柱图右Y轴
+     */
     private void initBarRightYAxis() {}
 
     private CombinedData getTestLineCombinedData() {

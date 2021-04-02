@@ -3,6 +3,8 @@ package com.fox.stockhelperchart.chart;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import com.fox.stockhelperchart.renderer.xaxis.StockKLineBarXAxisRenderer;
+import com.fox.stockhelperchart.renderer.yaxis.StockKLineBarYAxisRenderer;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
@@ -46,6 +48,22 @@ public class StockKLineBarCombinedChart extends CombinedChart {
         setDescription(description);
         //不显示数据集合名称
         getLegend().setEnabled(false);
+        //设置X轴渲染器
+        setXAxisRenderer(
+                new StockKLineBarXAxisRenderer(
+                        getViewPortHandler(),
+                        getXAxis(),
+                        getTransformer(YAxis.AxisDependency.LEFT)
+                )
+        );
+        //设置左Y轴渲染器
+        setRendererLeftYAxis(
+                new StockKLineBarYAxisRenderer(
+                        getViewPortHandler(),
+                        getAxisLeft(),
+                        getTransformer(YAxis.AxisDependency.LEFT)
+                )
+        );
     }
 
     /**
@@ -56,7 +74,9 @@ public class StockKLineBarCombinedChart extends CombinedChart {
         //设置位置
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         //不显示刻度值
-//        xAxis.setDrawLabels(false);
+        xAxis.setDrawLabels(false);
+        //网格虚线
+        xAxis.enableGridDashedLine(4, 3, 0);
     }
 
     /**
@@ -68,6 +88,8 @@ public class StockKLineBarCombinedChart extends CombinedChart {
         leftYAxis.setDrawLabels(true);
         //刻度显示再里边
         leftYAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+        //网格虚线
+        leftYAxis.enableGridDashedLine(4, 3, 0);
     }
 
     /**
@@ -77,5 +99,7 @@ public class StockKLineBarCombinedChart extends CombinedChart {
         YAxis rightYAxis = getAxisRight();
         //不显示刻度值
         rightYAxis.setDrawLabels(false);
+        //不画网格线
+        rightYAxis.setDrawGridLines(false);
     }
 }
