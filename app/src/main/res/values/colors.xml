@@ -9,9 +9,16 @@
     <color name="stockFlat">#939090</color>
     <!--图表默认边框颜色-->
     <color name="chartBorder">#BFBDBD</color>
+    <!--0线颜色-->
+    <color name="zeroLine">#BFBDBD</color>
     <!--价格线颜色-->
     <color name="priceLine">#454141</color>
     <!--MarkerView颜色-->
     <color name="markerViewStrBg">#406ebc</color>
     <color name="markerViewStrText">#FFFFFF</color>
+    <!--ma颜色-->
+    <color name="ma5">#5198FA</color>
+    <color name="ma10">#E9967A</color>
+    <color name="ma20">#8d4bbb</color>
+    <color name="ma30">#804000</color>
 </resources>

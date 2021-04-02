@@ -6,8 +6,8 @@ import android.util.AttributeSet;
 import com.fox.stockhelperchart.R;
 import com.fox.stockhelperchart.formatter.StockXAxisFormatter;
 import com.fox.stockhelperchart.markerview.StockMarkerView;
-import com.fox.stockhelperchart.renderer.StockBarChartRenderer;
-import com.fox.stockhelperchart.renderer.StockMinuteLineXAxisRenderer;
+import com.fox.stockhelperchart.renderer.chart.StockMultiDayMinuteBarChartRenderer;
+import com.fox.stockhelperchart.renderer.xaxis.StockMultiDayMinuteLineXAxisRenderer;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
@@ -59,7 +59,13 @@ public class StockMultiDayMinuteBarChart extends BarChart {
         //不显示数据集合名称
         getLegend().setEnabled(false);
         //设置渲染器
-        mRenderer = new StockBarChartRenderer(this, mAnimator, mViewPortHandler);
+        setRenderer(
+                new StockMultiDayMinuteBarChartRenderer(
+                        this,
+                        getAnimator(),
+                        getViewPortHandler()
+                )
+        );
         //设置提示
         StockMarkerView stockMarkerView =
                 new StockMarkerView(getContext(), R.layout.markerview_str);
@@ -72,32 +78,29 @@ public class StockMultiDayMinuteBarChart extends BarChart {
      */
     private void initXAxis() {
         XAxis xAxis = getXAxis();
+        //不显示刻度值
+        xAxis.setDrawLabels(false);
         //设置位置
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        //不显示刻度值
-//        xAxis.setDrawLabels(false);
         //设置X轴渲染器
-        StockMinuteLineXAxisRenderer stockMinuteLineXAxisRenderer = new StockMinuteLineXAxisRenderer(
+        StockMultiDayMinuteLineXAxisRenderer stockMultiDayMinuteLineXAxisRenderer = new StockMultiDayMinuteLineXAxisRenderer(
                 getViewPortHandler(),
                 xAxis,
                 getTransformer(YAxis.AxisDependency.LEFT)
         );
-        int[] gradLinePos = new int[DAY_NUM - 1];
+        int[] gradLinePos = new int[DAY_NUM + 1];
         int[] labelPos = new int[DAY_NUM];
         TreeMap<Integer, String> labelMap = new TreeMap<>();
-        String gradLinePosStr = "";
-        for (int i = 0; i < DAY_NUM - 1; i++) {
-            gradLinePos[i] = X_NODE_COUNT * (i + 1);
-            gradLinePosStr += X_NODE_COUNT * (i + 1);
-            gradLinePosStr += ",";
+        for (int i = 0; i <= DAY_NUM; i++) {
+            gradLinePos[i] = X_NODE_COUNT * i;
         }
         for (int i = 0; i < DAY_NUM; i++) {
             labelMap.put(X_NODE_COUNT / 2 + X_NODE_COUNT * i, "21/3/1");
             labelPos[i] = X_NODE_COUNT / 2 + X_NODE_COUNT * i;
         }
-        stockMinuteLineXAxisRenderer.setGradLinePos(gradLinePos);
-        stockMinuteLineXAxisRenderer.setLabelPos(labelPos);
-        setXAxisRenderer(stockMinuteLineXAxisRenderer);
+        stockMultiDayMinuteLineXAxisRenderer.setGradLinePos(gradLinePos);
+        stockMultiDayMinuteLineXAxisRenderer.setLabelPos(labelPos);
+        setXAxisRenderer(stockMultiDayMinuteLineXAxisRenderer);
         //设置X轴Label格式器
         StockXAxisFormatter stockXAxisFormatter = new StockXAxisFormatter();
         stockXAxisFormatter.setLabels(labelMap);
@@ -109,7 +112,7 @@ public class StockMultiDayMinuteBarChart extends BarChart {
      */
     private void initLeftYAxis() {
         YAxis leftYAxis = getAxisLeft();
-        //不显示刻度值
+        //显示刻度值
         leftYAxis.setDrawLabels(true);
         //刻度显示再里边
         leftYAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);

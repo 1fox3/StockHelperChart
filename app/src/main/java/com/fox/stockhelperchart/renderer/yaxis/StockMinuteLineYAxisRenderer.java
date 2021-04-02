@@ -1,14 +1,15 @@
-package com.fox.stockhelperchart.renderer;
+package com.fox.stockhelperchart.renderer.yaxis;
 
 import android.graphics.Canvas;
+import android.graphics.DashPathEffect;
 import android.graphics.Path;
 
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.renderer.YAxisRenderer;
+import com.github.mikephil.charting.utils.MPPointD;
 import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
-public class StockMinuteLineYAxisRenderer extends YAxisRenderer {
+public class StockMinuteLineYAxisRenderer extends StockYAxisRenderer {
     protected boolean isLabelValueInside = true;
     protected float flatValue;
     protected int[] labelColorArr;
@@ -16,6 +17,7 @@ public class StockMinuteLineYAxisRenderer extends YAxisRenderer {
 
     public StockMinuteLineYAxisRenderer(ViewPortHandler viewPortHandler, YAxis yAxis, Transformer trans) {
         super(viewPortHandler, yAxis, trans);
+        setDrawMiddleGridLine(false);
     }
 
     public void setLabelValueInside(boolean enabled) {
@@ -80,44 +82,35 @@ public class StockMinuteLineYAxisRenderer extends YAxisRenderer {
         }
     }
 
+    /**
+     * Draws the zero line.
+     */
     @Override
-    public void renderGridLines(Canvas c) {
+    protected void drawZeroLine(Canvas c) {
 
-        if (!mYAxis.isEnabled())
-            return;
+        int clipRestoreCount = c.save();
+        mZeroLineClippingRect.set(mViewPortHandler.getContentRect());
+        mZeroLineClippingRect.inset(0.f, -mYAxis.getZeroLineWidth());
+        c.clipRect(mZeroLineClippingRect);
 
-        if (mYAxis.isDrawGridLinesEnabled()) {
+        // draw zero line
+        MPPointD pos = mTrans.getPixelForValues(0f, 0f);
 
-            int clipRestoreCount = c.save();
-            c.clipRect(getGridClippingRect());
+        mZeroLinePaint.setColor(mYAxis.getZeroLineColor());
+        mZeroLinePaint.setStrokeWidth(mYAxis.getZeroLineWidth());
+        mZeroLinePaint.setPathEffect(
+                new DashPathEffect(new float[]{10, 10}, 0)
+        );
 
-            float[] positions = getTransformedPositions();
+        Path zeroLinePath = mDrawZeroLinePath;
+        zeroLinePath.reset();
 
-            mGridPaint.setColor(mYAxis.getGridColor());
-            mGridPaint.setStrokeWidth(mYAxis.getGridLineWidth());
-            mGridPaint.setPathEffect(mYAxis.getGridDashPathEffect());
+        zeroLinePath.moveTo(mViewPortHandler.contentLeft(), (float) pos.y);
+        zeroLinePath.lineTo(mViewPortHandler.contentRight(), (float) pos.y);
 
-            Path gridLinePath = mRenderGridLinesPath;
-            gridLinePath.reset();
+        // draw a path because lines don't support dashing on lower android versions
+        c.drawPath(zeroLinePath, mZeroLinePaint);
 
-            // draw the grid
-            for (int i = 0; i < positions.length; i += 2) {
-
-                //不画中间的线
-                if (i == (int) ((positions.length - 1) / 2)) {
-                    continue;
-                }
-
-                // draw a path because lines don't support dashing on lower android versions
-                c.drawPath(linePath(gridLinePath, i, positions), mGridPaint);
-                gridLinePath.reset();
-            }
-
-            c.restoreToCount(clipRestoreCount);
-        }
-
-        if (mYAxis.isDrawZeroLineEnabled()) {
-            drawZeroLine(c);
-        }
+        c.restoreToCount(clipRestoreCount);
     }
 }

@@ -60,9 +60,17 @@ public class BaseStockChart extends LinearLayout {
      */
     protected int[] colorArr;
     /**
+     * ma颜色数组
+     */
+    protected int[] maColorArr;
+    /**
      * 图标边框颜色
      */
     protected int borderColor;
+    /**
+     * 0线颜色
+     */
+    protected int zeroLineColor;
     /**
      * 价格线颜色
      */
@@ -116,7 +124,26 @@ public class BaseStockChart extends LinearLayout {
                 ContextCompat.getColor(context, R.color.stockDown),
                 ContextCompat.getColor(context, R.color.stockFlat),
         };
+        maColorArr = new int[] {
+                ContextCompat.getColor(context, R.color.ma5),
+                ContextCompat.getColor(context, R.color.ma10),
+                ContextCompat.getColor(context, R.color.ma20),
+                ContextCompat.getColor(context, R.color.ma30),
+        };
         borderColor = ContextCompat.getColor(context, R.color.chartBorder);
+        zeroLineColor = ContextCompat.getColor(context, R.color.zeroLine);
         priceLineColor = ContextCompat.getColor(context, R.color.priceLine);
+    }
+
+
+    /**
+     * 获取随机值
+     *
+     * @param min
+     * @param max
+     * @return
+     */
+    protected float random(double min, double max) {
+        return (float) (Math.random() * (max - min) + min);
     }
 }

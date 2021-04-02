@@ -10,9 +10,8 @@ import androidx.annotation.Nullable;
 import com.fox.stockhelperchart.chart.StockSingleDayMinuteBarChart;
 import com.fox.stockhelperchart.chart.StockSingleDayMinuteLineChart;
 import com.fox.stockhelperchart.formatter.StockPriceFormatter;
-import com.fox.stockhelperchart.renderer.StockBarYAxisRenderer;
-import com.fox.stockhelperchart.renderer.StockMinuteLineYAxisRenderer;
-import com.github.mikephil.charting.components.LimitLine;
+import com.fox.stockhelperchart.renderer.yaxis.StockSingleDayMinuteBarYAxisRenderer;
+import com.fox.stockhelperchart.renderer.yaxis.StockSingleDayMinuteLineYAxisRenderer;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -22,6 +21,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,19 +127,19 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
         lineLeftY.setAxisMinimum(LEFT_Y_VALUE_MIN);
         //设置左Y轴的最大值
         lineLeftY.setAxisMaximum(LEFT_Y_VALUE_MAX);
-        //Y轴不显示网格线
-        lineLeftY.setDrawGridLines(true);
+        //左Y轴不显示网格线
+        lineLeftY.setDrawGridLines(false);
         //设置默认值显示的刻度数量
         lineLeftY.setLabelCount(LINE_Y_LABEL_COUNT, true);
         //设置左Y轴渲染器
-        StockMinuteLineYAxisRenderer stockMinuteLineYAxisRenderer = new StockMinuteLineYAxisRenderer(
+        StockSingleDayMinuteLineYAxisRenderer stockSingleDayMinuteLineYAxisRenderer = new StockSingleDayMinuteLineYAxisRenderer(
                 lineChart.getViewPortHandler(),
                 lineLeftY,
                 lineChart.getTransformer(YAxis.AxisDependency.LEFT)
         );
-        stockMinuteLineYAxisRenderer.setLabelColorArr(colorArr);
-        stockMinuteLineYAxisRenderer.setFlatValue((LEFT_Y_VALUE_MAX + LEFT_Y_VALUE_MIN) / 2);
-        lineChart.setRendererLeftYAxis(stockMinuteLineYAxisRenderer);
+        stockSingleDayMinuteLineYAxisRenderer.setLabelColorArr(colorArr);
+        stockSingleDayMinuteLineYAxisRenderer.setFlatValue((LEFT_Y_VALUE_MAX + LEFT_Y_VALUE_MIN) / 2);
+        lineChart.setRendererLeftYAxis(stockSingleDayMinuteLineYAxisRenderer);
         //设置右Y轴数值格式器
         lineLeftY.setValueFormatter(
                 new StockPriceFormatter()
@@ -157,23 +157,24 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
         lineRightY.setAxisMinimum(RIGHT_Y_VALUE_MIN);
         //设置右Y轴的最大值
         lineRightY.setAxisMaximum(RIGHT_Y_VALUE_MAX);
-        //添加增幅为0的提示线
-        LimitLine zeroLimitLine = new LimitLine(0);
-        zeroLimitLine.enableDashedLine(10f, 10f, 0);
-        zeroLimitLine.setLineColor(borderColor);
-        zeroLimitLine.setLineWidth(1);
-        lineRightY.addLimitLine(zeroLimitLine);
+        //画0线
+        lineRightY.setDrawZeroLine(true);
+        lineRightY.setZeroLineColor(zeroLineColor);
+        lineRightY.setZeroLineWidth(1);
         //设置默认值显示的刻度数量
         lineRightY.setLabelCount(LINE_Y_LABEL_COUNT, true);
+        //右Y轴显示网格线
+        lineRightY.setDrawGridLines(true);
         //设置右Y轴渲染器
-        StockMinuteLineYAxisRenderer stockMinuteLineYAxisRenderer = new StockMinuteLineYAxisRenderer(
-                lineChart.getViewPortHandler(),
-                lineRightY,
-                lineChart.getTransformer(YAxis.AxisDependency.RIGHT)
-        );
-        stockMinuteLineYAxisRenderer.setLabelColorArr(colorArr);
-        stockMinuteLineYAxisRenderer.setFlatValue(0);
-        lineChart.setRendererRightYAxis(stockMinuteLineYAxisRenderer);
+        StockSingleDayMinuteLineYAxisRenderer stockSingleDayMinuteLineYAxisRenderer =
+                new StockSingleDayMinuteLineYAxisRenderer(
+                        lineChart.getViewPortHandler(),
+                        lineRightY,
+                        lineChart.getTransformer(YAxis.AxisDependency.RIGHT)
+                );
+        stockSingleDayMinuteLineYAxisRenderer.setLabelColorArr(colorArr);
+        stockSingleDayMinuteLineYAxisRenderer.setFlatValue(0);
+        lineChart.setRendererRightYAxis(stockSingleDayMinuteLineYAxisRenderer);
     }
 
     /**
@@ -192,6 +193,14 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
         initBarRightYAxis();
         //设置数据
         barChart.setData(getTestBarData());
+        //设置与上边无间隔
+        ViewPortHandler viewPortHandler = barChart.getViewPortHandler();
+        barChart.setViewPortOffsets(
+                viewPortHandler.offsetLeft(),
+                5,
+                viewPortHandler.offsetRight(),
+                viewPortHandler.offsetBottom()
+        );
     }
 
     /**
@@ -213,11 +222,12 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
         //设置默认值显示的刻度数量
         barLeftY.setLabelCount(BAR_Y_LABEL_COUNT, true);
         //设置左Y轴渲染器
-        StockBarYAxisRenderer stockYAxisRenderer = new StockBarYAxisRenderer(
-                barChart.getViewPortHandler(),
-                barLeftY,
-                barChart.getTransformer(YAxis.AxisDependency.LEFT)
-        );
+        StockSingleDayMinuteBarYAxisRenderer stockSingleDayMinuteBarYAxisRenderer =
+                new StockSingleDayMinuteBarYAxisRenderer(
+                        barChart.getViewPortHandler(),
+                        barLeftY,
+                        barChart.getTransformer(YAxis.AxisDependency.LEFT)
+                );
         //设置左Y轴刻度值
         String[] labelArr = new String[BAR_Y_LABEL_COUNT];
         for (int i = 0; i < BAR_Y_LABEL_COUNT; i++) {
@@ -229,8 +239,8 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
                 labelArr[i] = "";
             }
         }
-        stockYAxisRenderer.setLabels(labelArr);
-        barChart.setRendererLeftYAxis(stockYAxisRenderer);
+        stockSingleDayMinuteBarYAxisRenderer.setLabels(labelArr);
+        barChart.setRendererLeftYAxis(stockSingleDayMinuteBarYAxisRenderer);
     }
 
     /**
@@ -270,17 +280,6 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
                 lineChart.highlightValues(null);
             }
         });
-    }
-
-    /**
-     * 获取随机值
-     *
-     * @param min
-     * @param max
-     * @return
-     */
-    private float random(double min, double max) {
-        return (float) (Math.random() * (max - min) + min);
     }
 
     private LineData getTestLineData() {

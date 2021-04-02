@@ -3,32 +3,23 @@ package com.fox.stockhelperchart.chart;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.fox.stockhelperchart.R;
-import com.fox.stockhelperchart.markerview.StockMarkerView;
-import com.fox.stockhelperchart.renderer.chart.StockSingleDayMinuteBarChartRenderer;
-import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 
-/**
- * 股票单天分钟粒度柱状图
- *
- * @author lusongsong
- * @date 2021/2/26 15:09
- */
-public class StockSingleDayMinuteBarChart extends BarChart {
-    public StockSingleDayMinuteBarChart(Context context) {
+public class StockKLineBarCombinedChart extends CombinedChart {
+    public StockKLineBarCombinedChart(Context context) {
         super(context);
         initSelf();
     }
 
-    public StockSingleDayMinuteBarChart(Context context, AttributeSet attrs) {
+    public StockKLineBarCombinedChart(Context context, AttributeSet attrs) {
         super(context, attrs);
         initSelf();
     }
 
-    public StockSingleDayMinuteBarChart(Context context, AttributeSet attrs, int defStyle) {
+    public StockKLineBarCombinedChart(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initSelf();
     }
@@ -47,25 +38,14 @@ public class StockSingleDayMinuteBarChart extends BarChart {
      * 初始化图表
      */
     private void initChart() {
+        //画外框线
+        setDrawBorders(true);
         //不显示线图描述文案
         Description description = new Description();
         description.setEnabled(false);
         setDescription(description);
         //不显示数据集合名称
         getLegend().setEnabled(false);
-        //设置渲染器
-        setRenderer(
-                new StockSingleDayMinuteBarChartRenderer(
-                        this,
-                        getAnimator(),
-                        getViewPortHandler()
-                )
-        );
-        //设置提示
-        StockMarkerView stockMarkerView =
-                new StockMarkerView(getContext(), R.layout.markerview_str);
-        stockMarkerView.setChartView(this);
-        setMarker(stockMarkerView);
     }
 
     /**
@@ -73,8 +53,10 @@ public class StockSingleDayMinuteBarChart extends BarChart {
      */
     private void initXAxis() {
         XAxis xAxis = getXAxis();
+        //设置位置
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         //不显示刻度值
-        xAxis.setDrawLabels(false);
+//        xAxis.setDrawLabels(false);
     }
 
     /**

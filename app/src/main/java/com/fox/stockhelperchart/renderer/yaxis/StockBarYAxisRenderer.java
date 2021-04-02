@@ -1,4 +1,4 @@
-package com.fox.stockhelperchart.renderer;
+package com.fox.stockhelperchart.renderer.yaxis;
 
 import android.graphics.Canvas;
 

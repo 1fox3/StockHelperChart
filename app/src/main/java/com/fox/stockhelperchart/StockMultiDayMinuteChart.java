@@ -10,10 +10,9 @@ import androidx.annotation.Nullable;
 import com.fox.stockhelperchart.chart.StockMultiDayMinuteBarChart;
 import com.fox.stockhelperchart.chart.StockMultiDayMinuteLineChart;
 import com.fox.stockhelperchart.formatter.StockPriceFormatter;
-import com.fox.stockhelperchart.renderer.StockBarYAxisRenderer;
-import com.fox.stockhelperchart.renderer.StockMinuteLineYAxisRenderer;
+import com.fox.stockhelperchart.renderer.yaxis.StockMultiDayMinuteBarYAxisRenderer;
+import com.fox.stockhelperchart.renderer.yaxis.StockMultiDayMinuteLineYAxisRenderer;
 import com.github.mikephil.charting.components.LimitLine;
-import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -23,6 +22,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,15 +130,16 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
         //设置默认值显示的刻度数量
         lineLeftY.setLabelCount(LINE_Y_LABEL_COUNT, true);
         //设置左Y轴渲染器
-        StockMinuteLineYAxisRenderer stockMinuteLineYAxisRenderer = new StockMinuteLineYAxisRenderer(
-                lineChart.getViewPortHandler(),
-                lineLeftY,
-                lineChart.getTransformer(YAxis.AxisDependency.LEFT)
-        );
-        stockMinuteLineYAxisRenderer.setLabelColorArr(colorArr);
-        stockMinuteLineYAxisRenderer.setFlatValue((LEFT_Y_VALUE_MAX + LEFT_Y_VALUE_MIN) / 2);
-        stockMinuteLineYAxisRenderer.setLabelStep(1);
-        lineChart.setRendererLeftYAxis(stockMinuteLineYAxisRenderer);
+        StockMultiDayMinuteLineYAxisRenderer stockMultiDayMinuteLineYAxisRenderer =
+                new StockMultiDayMinuteLineYAxisRenderer(
+                        lineChart.getViewPortHandler(),
+                        lineLeftY,
+                        lineChart.getTransformer(YAxis.AxisDependency.LEFT)
+                );
+        stockMultiDayMinuteLineYAxisRenderer.setLabelColorArr(colorArr);
+        stockMultiDayMinuteLineYAxisRenderer.setFlatValue((LEFT_Y_VALUE_MAX + LEFT_Y_VALUE_MIN) / 2);
+        stockMultiDayMinuteLineYAxisRenderer.setLabelStep(1);
+        lineChart.setRendererLeftYAxis(stockMultiDayMinuteLineYAxisRenderer);
         //设置右Y轴数值格式器
         lineLeftY.setValueFormatter(
                 new StockPriceFormatter()
@@ -164,15 +165,16 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
         //设置默认值显示的刻度数量
         lineRightY.setLabelCount(LINE_Y_LABEL_COUNT, true);
         //设置右Y轴渲染器
-        StockMinuteLineYAxisRenderer stockMinuteLineYAxisRenderer = new StockMinuteLineYAxisRenderer(
-                lineChart.getViewPortHandler(),
-                lineRightY,
-                lineChart.getTransformer(YAxis.AxisDependency.RIGHT)
-        );
-        stockMinuteLineYAxisRenderer.setLabelColorArr(colorArr);
-        stockMinuteLineYAxisRenderer.setFlatValue(0);
-        stockMinuteLineYAxisRenderer.setLabelStep(1);
-        lineChart.setRendererRightYAxis(stockMinuteLineYAxisRenderer);
+        StockMultiDayMinuteLineYAxisRenderer stockMultiDayMinuteLineYAxisRenderer =
+                new StockMultiDayMinuteLineYAxisRenderer(
+                        lineChart.getViewPortHandler(),
+                        lineRightY,
+                        lineChart.getTransformer(YAxis.AxisDependency.RIGHT)
+                );
+        stockMultiDayMinuteLineYAxisRenderer.setLabelColorArr(colorArr);
+        stockMultiDayMinuteLineYAxisRenderer.setFlatValue(0);
+        stockMultiDayMinuteLineYAxisRenderer.setLabelStep(1);
+        lineChart.setRendererRightYAxis(stockMultiDayMinuteLineYAxisRenderer);
     }
 
     /**
@@ -191,6 +193,14 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
         initBarRightYAxis();
         //设置数据
         barChart.setData(getTestBarData());
+        //设置与上边无间隔
+        ViewPortHandler viewPortHandler = barChart.getViewPortHandler();
+        barChart.setViewPortOffsets(
+                viewPortHandler.offsetLeft(),
+                5,
+                viewPortHandler.offsetRight(),
+                viewPortHandler.offsetBottom()
+        );
     }
 
     /**
@@ -212,11 +222,12 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
         //设置默认值显示的刻度数量
         barLeftY.setLabelCount(BAR_Y_LABEL_COUNT, true);
         //设置左Y轴渲染器
-        StockBarYAxisRenderer stockYAxisRenderer = new StockBarYAxisRenderer(
-                barChart.getViewPortHandler(),
-                barLeftY,
-                barChart.getTransformer(YAxis.AxisDependency.LEFT)
-        );
+        StockMultiDayMinuteBarYAxisRenderer stockMultiDayMinuteBarYAxisRenderer =
+                new StockMultiDayMinuteBarYAxisRenderer(
+                        barChart.getViewPortHandler(),
+                        barLeftY,
+                        barChart.getTransformer(YAxis.AxisDependency.LEFT)
+                );
         //设置左Y轴刻度值
         String[] labelArr = new String[BAR_Y_LABEL_COUNT];
         for (int i = 0; i < BAR_Y_LABEL_COUNT; i++) {
@@ -228,8 +239,8 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
                 labelArr[i] = "";
             }
         }
-        stockYAxisRenderer.setLabels(labelArr);
-        barChart.setRendererLeftYAxis(stockYAxisRenderer);
+        stockMultiDayMinuteBarYAxisRenderer.setLabels(labelArr);
+        barChart.setRendererLeftYAxis(stockMultiDayMinuteBarYAxisRenderer);
     }
 
     /**
@@ -269,17 +280,6 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
                 lineChart.highlightValues(null);
             }
         });
-    }
-
-    /**
-     * 获取随机值
-     *
-     * @param min
-     * @param max
-     * @return
-     */
-    private float random(double min, double max) {
-        return (float) (Math.random() * (max - min) + min);
     }
 
     private LineData getTestLineData() {

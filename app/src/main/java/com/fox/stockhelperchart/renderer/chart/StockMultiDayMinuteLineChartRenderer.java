@@ -1,4 +1,4 @@
-package com.fox.stockhelperchart.renderer;
+package com.fox.stockhelperchart.renderer.chart;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

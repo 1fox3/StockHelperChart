@@ -1,18 +1,10 @@
-package com.fox.stockhelperchart.renderer;
-
-import android.graphics.Canvas;
-import android.graphics.Path;
+package com.fox.stockhelperchart.renderer.xaxis;
 
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.renderer.XAxisRenderer;
 import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
-/**
- * @author lusongsong
- * @date 2021/3/15 17:04
- */
-public class StockMinuteLineXAxisRenderer extends XAxisRenderer {
+public class StockMinuteLineXAxisRenderer extends StockXAxisRenderer {
     /**
      * 网格线位置
      */
@@ -50,33 +42,13 @@ public class StockMinuteLineXAxisRenderer extends XAxisRenderer {
     }
 
     @Override
-    public void renderGridLines(Canvas c) {
-
-        if (!mXAxis.isDrawGridLinesEnabled() || !mXAxis.isEnabled())
-            return;
-
-        int clipRestoreCount = c.save();
-        c.clipRect(getGridClippingRect());
-
+    protected float[] getGridLinePos() {
         float[] positions = new float[gradLinePos.length * 2];
 
         for (int i = 0; i < positions.length; i += 2) {
             positions[i] = gradLinePos[i / 2];
             positions[i + 1] = gradLinePos[i / 2];
         }
-
-        mTrans.pointValuesToPixel(positions);
-
-        setupGridPaint();
-
-        Path gridLinePath = mRenderGridLinesPath;
-        gridLinePath.reset();
-
-        for (int i = 0; i < positions.length; i += 2) {
-
-            drawGridLine(c, positions[i], positions[i + 1], gridLinePath);
-        }
-
-        c.restoreToCount(clipRestoreCount);
+        return positions;
     }
 }

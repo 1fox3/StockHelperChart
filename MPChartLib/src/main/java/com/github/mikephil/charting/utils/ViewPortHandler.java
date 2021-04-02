@@ -112,6 +112,8 @@ public class ViewPortHandler {
 
     public void restrainViewPort(float offsetLeft, float offsetTop, float offsetRight,
                                  float offsetBottom) {
+        System.out.println("2:" + offsetLeft + ":" + offsetTop + ":" + (mChartWidth - offsetRight) + ":" + (mChartHeight
+                - offsetBottom));
         mContentRect.set(offsetLeft, offsetTop, mChartWidth - offsetRight, mChartHeight
                 - offsetBottom);
     }

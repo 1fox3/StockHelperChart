@@ -4,36 +4,27 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import com.fox.stockhelperchart.R;
-import com.fox.stockhelperchart.formatter.StockPercentFormatter;
-import com.fox.stockhelperchart.formatter.StockPriceFormatter;
-import com.fox.stockhelperchart.formatter.StockXAxisFormatter;
-import com.fox.stockhelperchart.markerview.StockMarkerView;
-import com.fox.stockhelperchart.renderer.xaxis.StockSingleDayMinuteLineXAxisRenderer;
-import com.github.mikephil.charting.charts.LineChart;
+import com.fox.stockhelperchart.renderer.xaxis.StockKLineLineXAxisRenderer;
+import com.fox.stockhelperchart.renderer.yaxis.StockKLineLineYAxisRenderer;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 
 import static com.fox.stockhelperchart.BaseStockChart.NO_DATA_STR;
 
-/**
- * 股票单天分钟粒度线图
- *
- * @author lusongsong
- * @date 2021/2/25 18:04
- */
-public class StockSingleDayMinuteLineChart extends LineChart {
-    public StockSingleDayMinuteLineChart(Context context) {
+public class StockKLineLineCombinedChart extends CombinedChart {
+    public StockKLineLineCombinedChart(Context context) {
         super(context);
         initSelf();
     }
 
-    public StockSingleDayMinuteLineChart(Context context, AttributeSet attrs) {
+    public StockKLineLineCombinedChart(Context context, AttributeSet attrs) {
         super(context, attrs);
         initSelf();
     }
 
-    public StockSingleDayMinuteLineChart(Context context, AttributeSet attrs, int defStyle) {
+    public StockKLineLineCombinedChart(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initSelf();
     }
@@ -64,11 +55,22 @@ public class StockSingleDayMinuteLineChart extends LineChart {
         setDescription(description);
         //不显示数据集合名称
         getLegend().setEnabled(false);
-        //设置提示
-        StockMarkerView stockMarkerView =
-                new StockMarkerView(getContext(), R.layout.markerview_str);
-        stockMarkerView.setChartView(this);
-        setMarker(stockMarkerView);
+        //设置X轴渲染器
+        setXAxisRenderer(
+                new StockKLineLineXAxisRenderer(
+                        getViewPortHandler(),
+                        getXAxis(),
+                        getTransformer(YAxis.AxisDependency.LEFT)
+                )
+        );
+        //设置左Y轴渲染器
+        setRendererLeftYAxis(
+                new StockKLineLineYAxisRenderer(
+                        getViewPortHandler(),
+                        getAxisLeft(),
+                        getTransformer(YAxis.AxisDependency.LEFT)
+                )
+        );
     }
 
     /**
@@ -79,18 +81,11 @@ public class StockSingleDayMinuteLineChart extends LineChart {
         //X轴显示在底部
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         //X轴不显示坐标
-        xAxis.setDrawLabels(true);
+        xAxis.setDrawLabels(false);
         //X轴显示网格线
         xAxis.setDrawGridLines(true);
-        //设置X轴渲染器
-        StockSingleDayMinuteLineXAxisRenderer stockSingleDayMinuteLineXAxisRenderer = new StockSingleDayMinuteLineXAxisRenderer(
-                getViewPortHandler(),
-                xAxis,
-                getTransformer(YAxis.AxisDependency.LEFT)
-        );
-        setXAxisRenderer(stockSingleDayMinuteLineXAxisRenderer);
-        //设置X轴Label格式器
-        xAxis.setValueFormatter(new StockXAxisFormatter());
+        //网格虚线
+        xAxis.enableGridDashedLine(4, 3, 0);
     }
 
     /**
@@ -100,14 +95,10 @@ public class StockSingleDayMinuteLineChart extends LineChart {
         YAxis leftYAxis = getAxisLeft();
         //左Y轴显示在图标内部
         leftYAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        //Y轴不显示网格线
+        //Y轴显示网格线
         leftYAxis.setDrawGridLines(true);
-        //设置右Y轴数值格式器
-        leftYAxis.setValueFormatter(
-                new StockPriceFormatter()
-                        .setNumberFormatter(false)
-                        .initFormatter()
-        );
+        //网格虚线
+        leftYAxis.enableGridDashedLine(4, 3, 0);
     }
 
     /**
@@ -119,11 +110,7 @@ public class StockSingleDayMinuteLineChart extends LineChart {
         rightYAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         //Y轴不显示网格线
         rightYAxis.setDrawGridLines(false);
-        //设置右Y轴数值格式器
-        rightYAxis.setValueFormatter(
-                new StockPercentFormatter()
-                        .setNumberFormatter(false)
-                        .initFormatter()
-        );
+        //不显示刻度
+        rightYAxis.setDrawLabels(false);
     }
 }
