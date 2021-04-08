@@ -42,6 +42,8 @@ public class StockKLineBarCombinedChart extends CombinedChart {
     private void initChart() {
         //画外框线
         setDrawBorders(true);
+        //设置数值自适应
+        setAutoScaleMinMaxEnabled(true);
         //不显示线图描述文案
         Description description = new Description();
         description.setEnabled(false);

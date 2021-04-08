@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import com.fox.stockhelperchart.R;
+import com.fox.stockhelperchart.renderer.chart.StockKLineLineCombinedChartRenderer;
 import com.fox.stockhelperchart.renderer.xaxis.StockKLineLineXAxisRenderer;
 import com.fox.stockhelperchart.renderer.yaxis.StockKLineLineYAxisRenderer;
 import com.github.mikephil.charting.charts.CombinedChart;
@@ -45,6 +46,20 @@ public class StockKLineLineCombinedChart extends CombinedChart {
     private void initChart() {
         //画外框线
         setDrawBorders(true);
+        //设置范围大小自适应
+        setAutoScaleMinMaxEnabled(true);
+        //是否可拖动
+        setDragEnabled(true);
+        //x轴方向是否可放大缩小
+        setScaleXEnabled(true);
+        //Y轴方向是否可放大缩小
+        setScaleYEnabled(true);
+        //开机软件驱动
+        setHardwareAccelerationEnabled(true);
+        //k线滚动系数设置，控制滚动惯性
+        setDragDecelerationEnabled(true);
+        setDragDecelerationFrictionCoef(0.6f);//0.92持续滚动时的速度快慢，[0,1) 0代表立即停止。
+        setDoubleTapToZoomEnabled(false);
         //设置边框颜色
         setBorderColor(getContext().getColor(R.color.chartBorder));
         //设置无数据时的显示文案
@@ -55,6 +70,9 @@ public class StockKLineLineCombinedChart extends CombinedChart {
         setDescription(description);
         //不显示数据集合名称
         getLegend().setEnabled(false);
+        setRenderer(
+                new StockKLineLineCombinedChartRenderer(this, mAnimator, mViewPortHandler)
+        );
         //设置X轴渲染器
         setXAxisRenderer(
                 new StockKLineLineXAxisRenderer(
@@ -86,6 +104,8 @@ public class StockKLineLineCombinedChart extends CombinedChart {
         xAxis.setDrawGridLines(true);
         //网格虚线
         xAxis.enableGridDashedLine(4, 3, 0);
+        xAxis.setAvoidFirstLastClipping(true);
+        xAxis.setDrawLimitLinesBehindData(true);
     }
 
     /**
