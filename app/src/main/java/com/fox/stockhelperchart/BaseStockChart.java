@@ -75,6 +75,9 @@ public class BaseStockChart extends LinearLayout {
      * 价格线颜色
      */
     protected int priceLineColor;
+    protected int ma5Color;
+    protected int ma10Color;
+    protected int ma20Color;
     /**
      * 线图X轴
      */
@@ -133,6 +136,9 @@ public class BaseStockChart extends LinearLayout {
         borderColor = ContextCompat.getColor(context, R.color.chartBorder);
         zeroLineColor = ContextCompat.getColor(context, R.color.zeroLine);
         priceLineColor = ContextCompat.getColor(context, R.color.priceLine);
+        ma5Color = ContextCompat.getColor(context, R.color.ma5);
+        ma10Color = ContextCompat.getColor(context, R.color.ma10);
+        ma20Color = ContextCompat.getColor(context, R.color.ma20);
     }
 
 

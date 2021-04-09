@@ -22,7 +22,8 @@ import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.utils.Utils;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
@@ -206,24 +207,33 @@ public class StockKLineChart extends BaseStockChart {
     }
 
     private LineData getTestLineData() {
-        List<Entry> lineListEntry = new ArrayList<>();
+        List<ILineDataSet> lineDataMA = new ArrayList<>();
+        ArrayList<Entry> line5Entries = new ArrayList<>();
+        ArrayList<Entry> line10Entries = new ArrayList<>();
+        ArrayList<Entry> line20Entries = new ArrayList<>();
         List<List<String>> stockDataList = getStockDataList();
         for (int i = 0; i < stockDataList.size(); i++) {
             List<String> stockData = stockDataList.get(i);
-            lineListEntry.add(
-                    new Entry(i, Float.valueOf(stockData.get(1)))
-            );
+            line5Entries.add(new Entry(i, Float.valueOf(stockData.get(8))));
+            line10Entries.add(new Entry(i, Float.valueOf(stockData.get(9))));
+            line20Entries.add(new Entry(i, Float.valueOf(stockData.get(10))));
         }
-        LineDataSet lineDataSet = new LineDataSet(lineListEntry, "线图");
-        //不显示圆圈
-        lineDataSet.setDrawCircles(false);
-        //不显示数值
-        lineDataSet.setDrawValues(false);
-        lineDataSet.setColor(priceLineColor);
-        //设置数值选择是的颜色
-        lineDataSet.setHighLightColor(colorArr[1]);
-        LineData lineData = new LineData(lineDataSet);
+        lineDataMA.add(getTestLineMAData(line5Entries, "MA5", ma5Color));
+        lineDataMA.add(getTestLineMAData(line10Entries, "MA10", ma10Color));
+        lineDataMA.add(getTestLineMAData(line20Entries, "MA20", ma20Color));
+        LineData lineData = new LineData(lineDataMA);
         return lineData;
+    }
+    private ILineDataSet getTestLineMAData(List<Entry> entryList, String label, int color) {
+        LineDataSet lineDataSet = new LineDataSet(entryList, label);
+        lineDataSet.setDrawHighlightIndicators(false);
+        lineDataSet.setHighlightEnabled(false);
+        lineDataSet.setDrawValues(false);
+        lineDataSet.setColor(color);
+        lineDataSet.setLineWidth(0.6f);
+        lineDataSet.setDrawCircles(false);
+        lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        return lineDataSet;
     }
 
 
@@ -260,6 +270,24 @@ public class StockKLineChart extends BaseStockChart {
             );
         }
         return candleEntryList;
+    }
+
+    private CombinedData getVolumeBarData() {
+        CombinedData barCombinedData = new CombinedData();
+        ArrayList<BarEntry> barEntries = new ArrayList<>();
+        List<List<String>> stockDataList = getStockDataList();
+        for (int i = 0; i < stockDataList.size(); i++) {
+            List<String> stockData = stockDataList.get(i);
+            float openPrice = Float.valueOf(stockData.get(3));
+            float closePrice = Float.valueOf(stockData.get(4));
+            int colorIdx = openPrice == closePrice ? 2 : openPrice > closePrice ? 1 : 0;
+            barEntries.add(
+                    new BarEntry(
+                            Float.valueOf(i), Float.valueOf(stockData.get(8)), colorArr[colorIdx]
+                    )
+            );
+        }
+        return barCombinedData;
     }
 
     private List<List<String>> getStockDataList() {
