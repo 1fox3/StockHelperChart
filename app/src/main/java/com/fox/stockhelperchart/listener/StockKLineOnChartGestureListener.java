@@ -40,6 +40,10 @@ public class StockKLineOnChartGestureListener implements OnChartGestureListener 
     @Override
     public void onChartGestureEnd(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
         syncCharts();
+        //取消高亮显示
+        if (lastPerformedGesture != ChartTouchListener.ChartGesture.SINGLE_TAP) {
+            srcChart.highlightValue(null,true);
+        }
     }
 
     /**

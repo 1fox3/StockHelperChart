@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import com.fox.stockhelperchart.R;
+import com.fox.stockhelperchart.listener.StockKLineTouchListener;
 import com.fox.stockhelperchart.renderer.chart.StockKLineLineCombinedChartRenderer;
 import com.fox.stockhelperchart.renderer.xaxis.StockKLineLineXAxisRenderer;
 import com.fox.stockhelperchart.renderer.yaxis.StockKLineLineYAxisRenderer;
@@ -53,7 +54,7 @@ public class StockKLineLineCombinedChart extends CombinedChart {
         //x轴方向是否可放大缩小
         setScaleXEnabled(true);
         //Y轴方向是否可放大缩小
-        setScaleYEnabled(true);
+        setScaleYEnabled(false);
         //开机软件驱动
         setHardwareAccelerationEnabled(true);
         //k线滚动系数设置，控制滚动惯性
@@ -70,6 +71,7 @@ public class StockKLineLineCombinedChart extends CombinedChart {
         setDescription(description);
         //不显示数据集合名称
         getLegend().setEnabled(false);
+        //设置渲染器
         setRenderer(
                 new StockKLineLineCombinedChartRenderer(this, mAnimator, mViewPortHandler)
         );
@@ -89,6 +91,8 @@ public class StockKLineLineCombinedChart extends CombinedChart {
                         getTransformer(YAxis.AxisDependency.LEFT)
                 )
         );
+        //设置操作监听器
+        setOnTouchListener(new StockKLineTouchListener(this, mViewPortHandler.getMatrixTouch(), 3f));
     }
 
     /**

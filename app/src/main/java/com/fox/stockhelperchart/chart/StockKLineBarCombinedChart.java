@@ -3,6 +3,9 @@ package com.fox.stockhelperchart.chart;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import com.fox.stockhelperchart.R;
+import com.fox.stockhelperchart.listener.StockKLineTouchListener;
+import com.fox.stockhelperchart.renderer.chart.StockKLineLineCombinedChartRenderer;
 import com.fox.stockhelperchart.renderer.xaxis.StockKLineBarXAxisRenderer;
 import com.fox.stockhelperchart.renderer.yaxis.StockKLineBarYAxisRenderer;
 import com.github.mikephil.charting.charts.CombinedChart;
@@ -42,14 +45,32 @@ public class StockKLineBarCombinedChart extends CombinedChart {
     private void initChart() {
         //画外框线
         setDrawBorders(true);
-        //设置数值自适应
+        //设置范围大小自适应
         setAutoScaleMinMaxEnabled(true);
+        //是否可拖动
+        setDragEnabled(true);
+        //x轴方向是否可放大缩小
+        setScaleXEnabled(true);
+        //Y轴方向是否可放大缩小
+        setScaleYEnabled(false);
+        //开机软件驱动
+        setHardwareAccelerationEnabled(true);
+        //k线滚动系数设置，控制滚动惯性
+        setDragDecelerationEnabled(true);
+        setDragDecelerationFrictionCoef(0.6f);//0.92持续滚动时的速度快慢，[0,1) 0代表立即停止。
+        setDoubleTapToZoomEnabled(false);
+        //设置边框颜色
+        setBorderColor(getContext().getColor(R.color.chartBorder));
         //不显示线图描述文案
         Description description = new Description();
         description.setEnabled(false);
         setDescription(description);
         //不显示数据集合名称
         getLegend().setEnabled(false);
+        //设置渲染器
+        setRenderer(
+                new StockKLineLineCombinedChartRenderer(this, mAnimator, mViewPortHandler)
+        );
         //设置X轴渲染器
         setXAxisRenderer(
                 new StockKLineBarXAxisRenderer(
@@ -66,6 +87,8 @@ public class StockKLineBarCombinedChart extends CombinedChart {
                         getTransformer(YAxis.AxisDependency.LEFT)
                 )
         );
+        //设置操作监听器
+        setOnTouchListener(new StockKLineTouchListener(this, mViewPortHandler.getMatrixTouch(), 3f));
     }
 
     /**

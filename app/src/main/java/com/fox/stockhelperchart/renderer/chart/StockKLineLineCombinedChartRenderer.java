@@ -31,8 +31,7 @@ public class StockKLineLineCombinedChartRenderer extends CombinedChartRenderer {
             switch (order) {
                 case BAR:
                     if (chart.getBarData() != null) {
-                        mRenderers.add(new BarChartRenderer(chart, mAnimator, mViewPortHandler));
-//                        mRenderers.add(new TimeBarChartRenderer(chart, mAnimator, mViewPortHandler));
+                        mRenderers.add(new StockKLineBarChartRenderer(chart, mAnimator, mViewPortHandler));
                     }
                     break;
                 case BUBBLE:
@@ -47,7 +46,7 @@ public class StockKLineLineCombinedChartRenderer extends CombinedChartRenderer {
                     break;
                 case CANDLE:
                     if (chart.getCandleData() != null) {
-                        mRenderers.add(new StockKLineLineCombinedChartCandleStickChartRenderer(chart, mAnimator, mViewPortHandler));
+                        mRenderers.add(new StockKLineCandleStickChartRenderer(chart, mAnimator, mViewPortHandler));
                     }
                     break;
                 case SCATTER:

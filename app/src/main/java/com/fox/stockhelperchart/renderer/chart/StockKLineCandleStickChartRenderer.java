@@ -14,8 +14,8 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.List;
 
-public class StockKLineLineCombinedChartCandleStickChartRenderer extends CandleStickChartRenderer {
-    public StockKLineLineCombinedChartCandleStickChartRenderer(CandleDataProvider chart, ChartAnimator animator, ViewPortHandler viewPortHandler) {
+public class StockKLineCandleStickChartRenderer extends CandleStickChartRenderer {
+    public StockKLineCandleStickChartRenderer(CandleDataProvider chart, ChartAnimator animator, ViewPortHandler viewPortHandler) {
         super(chart, animator, viewPortHandler);
     }
 

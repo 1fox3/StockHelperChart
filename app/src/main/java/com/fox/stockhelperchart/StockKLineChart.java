@@ -92,11 +92,20 @@ public class StockKLineChart extends BaseStockChart {
      * 设置数值选择监听器
      */
     private void setValueSelectedListener() {
+        //移动十字标数据监听
         lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
                 lineChart.highlightValue(h);
-                barChart.highlightValue(new Highlight(h.getX(), h.getDataSetIndex(), -1));
+                if (barChart.getData().getBarData().getDataSets().size() != 0) {
+                    Highlight highlight = new Highlight(h.getX(), h.getDataSetIndex(), h.getStackIndex());
+                    highlight.setDataIndex(h.getDataIndex());
+                    barChart.highlightValues(new Highlight[]{highlight});
+                } else {
+                    Highlight highlight = new Highlight(h.getX(), 2, h.getStackIndex());
+                    highlight.setDataIndex(0);
+                    barChart.highlightValues(new Highlight[]{highlight});
+                }
             }
 
             @Override
@@ -104,11 +113,15 @@ public class StockKLineChart extends BaseStockChart {
                 barChart.highlightValues(null);
             }
         });
+        //移动十字标数据监听
         barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+
             @Override
             public void onValueSelected(Entry e, Highlight h) {
                 barChart.highlightValue(h);
-                lineChart.highlightValue(new Highlight(h.getX(), h.getDataSetIndex(), -1));
+                Highlight highlight = new Highlight(h.getX(), 0, h.getStackIndex());
+                highlight.setDataIndex(1);
+                lineChart.highlightValues(new Highlight[]{highlight});
             }
 
             @Override
@@ -313,11 +326,13 @@ public class StockKLineChart extends BaseStockChart {
         barDataSet.setColors(colors);
         barDataSet.setDrawValues(false);
         //设置数值选择是的颜色
-        barDataSet.setHighLightColor(colorArr[1]);
+        barDataSet.setHighLightColor(ContextCompat.getColor(getContext(), R.color.stockUp));
         barDataSet.setHighlightEnabled(true);
         BarData barData = new BarData(barDataSet);
         CombinedData barCombinedData = new CombinedData();
         barCombinedData.setData(barData);
+        barCombinedData.setData(new LineData());
+        barCombinedData.setData(new CandleData());
         return barCombinedData;
     }
 
