@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat;
 
 import com.fox.stockhelperchart.chart.StockKLineBarCombinedChart;
 import com.fox.stockhelperchart.chart.StockKLineLineCombinedChart;
+import com.fox.stockhelperchart.listener.StockKLineOnChartGestureListener;
+import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -22,8 +24,9 @@ import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
@@ -69,6 +72,10 @@ public class StockKLineChart extends BaseStockChart {
         initLineChart();
         //初始化柱图
         initBarChart();
+        //设置数据选择监听器
+        setValueSelectedListener();
+        //设置操作同步
+        setOnChartGestureListener();
     }
 
     /**
@@ -79,6 +86,48 @@ public class StockKLineChart extends BaseStockChart {
                 R.layout.stock_kline_chart, this, true
         );
         ButterKnife.bind(this, view);
+    }
+
+    /**
+     * 设置数值选择监听器
+     */
+    private void setValueSelectedListener() {
+        lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                lineChart.highlightValue(h);
+                barChart.highlightValue(new Highlight(h.getX(), h.getDataSetIndex(), -1));
+            }
+
+            @Override
+            public void onNothingSelected() {
+                barChart.highlightValues(null);
+            }
+        });
+        barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                barChart.highlightValue(h);
+                lineChart.highlightValue(new Highlight(h.getX(), h.getDataSetIndex(), -1));
+            }
+
+            @Override
+            public void onNothingSelected() {
+                lineChart.highlightValues(null);
+            }
+        });
+    }
+
+    /**
+     * 设置操作同步
+     */
+    private void setOnChartGestureListener() {
+        lineChart.setOnChartGestureListener(
+                new StockKLineOnChartGestureListener(lineChart, new Chart[]{barChart})
+        );
+        barChart.setOnChartGestureListener(
+                new StockKLineOnChartGestureListener(barChart, new Chart[]{lineChart})
+        );
     }
 
     /**
@@ -145,7 +194,16 @@ public class StockKLineChart extends BaseStockChart {
         initBarLeftYAxis();
         //初始化柱图右Y轴
         initBarRightYAxis();
-        barChart.setData(getTestBarCombinedData());
+        CombinedData combinedData = getTestBarCombinedData();
+        barChart.setData(combinedData);
+        //计算缩放比例,以便可以左右滑动
+        barChart.zoom(getStockScaleX(), 0, 0, 0);
+        //设置X轴的坐标范围，以便显示全部图表
+        barChart.getXAxis().setAxisMinimum(combinedData.getXMin() - 0.5f);
+        barChart.getXAxis().setAxisMaximum(combinedData.getXMax() + 0.5f);
+        barChart.notifyDataSetChanged();
+        //滑动到尾部
+        barChart.moveViewToX(getStockDataList().size() - 1);
         //设置与上边无间隔
         ViewPortHandler viewPortHandler = barChart.getViewPortHandler();
         barChart.setViewPortOffsets(
@@ -200,12 +258,6 @@ public class StockKLineChart extends BaseStockChart {
         return lineCombinedData;
     }
 
-    private CombinedData getTestBarCombinedData() {
-        CombinedData barCombinedData = new CombinedData();
-        barCombinedData.setData(getTestBarData());
-        return barCombinedData;
-    }
-
     private LineData getTestLineData() {
         List<ILineDataSet> lineDataMA = new ArrayList<>();
         ArrayList<Entry> line5Entries = new ArrayList<>();
@@ -224,6 +276,7 @@ public class StockKLineChart extends BaseStockChart {
         LineData lineData = new LineData(lineDataMA);
         return lineData;
     }
+
     private ILineDataSet getTestLineMAData(List<Entry> entryList, String label, int color) {
         LineDataSet lineDataSet = new LineDataSet(entryList, label);
         lineDataSet.setDrawHighlightIndicators(false);
@@ -236,22 +289,36 @@ public class StockKLineChart extends BaseStockChart {
         return lineDataSet;
     }
 
+    private CombinedData getTestBarCombinedData() {
+        return getTestBarVolumeData();
+    }
 
-    private BarData getTestBarData() {
-        List<BarEntry> lineListEntry = new ArrayList<>(Y_NODE_COUNT);
-        int[] colors = new int[Y_NODE_COUNT];
-        for (int i = 0; i < Y_NODE_COUNT; i++) {
-            lineListEntry.add(new BarEntry(i, (float) random(LEFT_Y_VALUE_MIN, LEFT_Y_VALUE_MAX)));
-            //对应的颜色
-            colors[i] = colorArr[(int) random(0, 2)];
+    private CombinedData getTestBarVolumeData() {
+        List<List<String>> stockDataList = getStockDataList();
+        ArrayList<BarEntry> barEntries = new ArrayList<>(stockDataList.size());
+        int[] colors = new int[stockDataList.size()];
+        for (int i = 0; i < stockDataList.size(); i++) {
+            List<String> stockData = stockDataList.get(i);
+            float openPrice = Float.parseFloat(stockData.get(1));
+            float closePrice = Float.parseFloat(stockData.get(4));
+            int colorIdx = openPrice == closePrice ? 2 : openPrice > closePrice ? 1 : 0;
+            barEntries.add(
+                    new BarEntry(
+                            Float.valueOf(i), Float.valueOf(stockData.get(8))
+                    )
+            );
+            colors[i] = colorArr[colorIdx];
         }
-        BarDataSet barDataSet = new BarDataSet(lineListEntry, "柱图");
+        BarDataSet barDataSet = new BarDataSet(barEntries, "柱图");
         barDataSet.setColors(colors);
+        barDataSet.setDrawValues(false);
         //设置数值选择是的颜色
         barDataSet.setHighLightColor(colorArr[1]);
         barDataSet.setHighlightEnabled(true);
         BarData barData = new BarData(barDataSet);
-        return barData;
+        CombinedData barCombinedData = new CombinedData();
+        barCombinedData.setData(barData);
+        return barCombinedData;
     }
 
     private ArrayList<CandleEntry> getCandleEntryList() {
@@ -270,24 +337,6 @@ public class StockKLineChart extends BaseStockChart {
             );
         }
         return candleEntryList;
-    }
-
-    private CombinedData getVolumeBarData() {
-        CombinedData barCombinedData = new CombinedData();
-        ArrayList<BarEntry> barEntries = new ArrayList<>();
-        List<List<String>> stockDataList = getStockDataList();
-        for (int i = 0; i < stockDataList.size(); i++) {
-            List<String> stockData = stockDataList.get(i);
-            float openPrice = Float.valueOf(stockData.get(3));
-            float closePrice = Float.valueOf(stockData.get(4));
-            int colorIdx = openPrice == closePrice ? 2 : openPrice > closePrice ? 1 : 0;
-            barEntries.add(
-                    new BarEntry(
-                            Float.valueOf(i), Float.valueOf(stockData.get(8)), colorArr[colorIdx]
-                    )
-            );
-        }
-        return barCombinedData;
     }
 
     private List<List<String>> getStockDataList() {

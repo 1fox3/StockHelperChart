@@ -27,7 +27,6 @@ public class StockKLineLineCombinedChartRenderer extends CombinedChartRenderer {
         CombinedChart.DrawOrder[] orders = chart.getDrawOrder();
 
         for (CombinedChart.DrawOrder order : orders) {
-            System.out.println(order);
 
             switch (order) {
                 case BAR:

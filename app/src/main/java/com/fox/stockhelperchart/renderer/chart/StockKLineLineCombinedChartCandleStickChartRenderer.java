@@ -90,7 +90,6 @@ public class StockKLineLineCombinedChartCandleStickChartRenderer extends CandleS
                 //画右边
 //                String highString = NumberUtils.keepPrecisionR(minValue, dataSet.getPrecision());
                 String highString = String.valueOf(minValue);
-                System.out.println("minValue:" + highString);
 
                 //计算显示位置
                 //计算文本宽度
@@ -110,7 +109,6 @@ public class StockKLineLineCombinedChartCandleStickChartRenderer extends CandleS
                 //画左边
 //                String highString = NumberUtils.keepPrecisionR(minValue, dataSet.getPrecision());
                 String highString = String.valueOf(minValue);
-                System.out.println("minValue:" + highString);
                 //计算显示位置
                 int highStringWidth = Utils.calcTextWidth(mValuePaint, highString + " •──");
                 int highStringHeight = Utils.calcTextHeight(mValuePaint, highString + " •──");
@@ -132,7 +130,6 @@ public class StockKLineLineCombinedChartCandleStickChartRenderer extends CandleS
                 //画左边
 //                String highString = NumberUtils.keepPrecisionR(maxValue, dataSet.getPrecision());
                 String highString = String.valueOf(maxValue);
-                System.out.println("maxValue:" + highString);
                 int highStringWidth = Utils.calcTextWidth(mValuePaint, highString + " •──");
                 int highStringHeight = Utils.calcTextHeight(mValuePaint, highString + " •──");
 
@@ -149,7 +146,6 @@ public class StockKLineLineCombinedChartCandleStickChartRenderer extends CandleS
                 //画右边
 //                String highString = NumberUtils.keepPrecisionR(maxValue, dataSet.getPrecision());
                 String highString = String.valueOf(maxValue);
-                System.out.println("maxValue:" + highString);
                 //计算显示位置
                 int highStringWidth = Utils.calcTextWidth(mValuePaint, "──• " + highString);
                 int highStringHeight = Utils.calcTextHeight(mValuePaint, "──• " + highString);
