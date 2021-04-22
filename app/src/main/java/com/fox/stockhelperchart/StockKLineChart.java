@@ -271,6 +271,24 @@ public class StockKLineChart extends BaseStockChart {
         return lineCombinedData;
     }
 
+    private ArrayList<CandleEntry> getCandleEntryList() {
+        ArrayList<CandleEntry> candleEntryList = new ArrayList<>();
+        List<List<String>> stockDataList = getStockDataList();
+        for (int i = 0; i < stockDataList.size(); i++) {
+            List<String> stockData = stockDataList.get(i);
+            candleEntryList.add(
+                    new CandleEntry(
+                            i,
+                            Float.valueOf(stockData.get(2)),
+                            Float.valueOf(stockData.get(3)),
+                            Float.valueOf(stockData.get(1)),
+                            Float.valueOf(stockData.get(4))
+                    )
+            );
+        }
+        return candleEntryList;
+    }
+
     private LineData getTestLineData() {
         List<ILineDataSet> lineDataMA = new ArrayList<>();
         ArrayList<Entry> line5Entries = new ArrayList<>();
@@ -290,7 +308,7 @@ public class StockKLineChart extends BaseStockChart {
         return lineData;
     }
 
-    private ILineDataSet getTestLineMAData(List<Entry> entryList, String label, int color) {
+    private LineDataSet getTestLineMAData(List<Entry> entryList, String label, int color) {
         LineDataSet lineDataSet = new LineDataSet(entryList, label);
         lineDataSet.setDrawHighlightIndicators(false);
         lineDataSet.setHighlightEnabled(false);
@@ -303,7 +321,11 @@ public class StockKLineChart extends BaseStockChart {
     }
 
     private CombinedData getTestBarCombinedData() {
-        return getTestBarVolumeData();
+//        return getTestBarVolumeData();
+//        return getTestBarMACDData();
+//        return getTestBarKDJData();
+//        return getTestBarBOLLData();
+        return getTestBarRSIData();
     }
 
     private CombinedData getTestBarVolumeData() {
@@ -336,22 +358,380 @@ public class StockKLineChart extends BaseStockChart {
         return barCombinedData;
     }
 
-    private ArrayList<CandleEntry> getCandleEntryList() {
-        ArrayList<CandleEntry> candleEntryList = new ArrayList<>();
+    private CombinedData getTestBarMACDData() {
+        int mNum = 9;
+        int shortNum = 12;
+        int longNum = 26;
         List<List<String>> stockDataList = getStockDataList();
+        ArrayList<BarEntry> madcBarEntries = new ArrayList<>(stockDataList.size());
+        ArrayList<Entry> deaBarEntries = new ArrayList<>(stockDataList.size());
+        ArrayList<Entry> difBarEntries = new ArrayList<>(stockDataList.size());
+
+        List<Float> dEAs = new ArrayList<Float>();
+        List<Float> dIFs = new ArrayList<Float>();
+        List<Float> mACDs = new ArrayList<Float>();
+
+        float eMAShort = 0.0f;
+        float eMALong = 0.0f;
+        float closePrice = 0f;
+        float dIF = 0.0f;
+        float dEA = 0.0f;
+        float mACD = 0.0f;
         for (int i = 0; i < stockDataList.size(); i++) {
             List<String> stockData = stockDataList.get(i);
-            candleEntryList.add(
-                    new CandleEntry(
-                            i,
-                            Float.valueOf(stockData.get(2)),
-                            Float.valueOf(stockData.get(3)),
-                            Float.valueOf(stockData.get(1)),
-                            Float.valueOf(stockData.get(4))
-                    )
-            );
+            closePrice = Float.parseFloat(stockData.get(4));
+            if (i == 0) {
+                eMAShort = closePrice;
+                eMALong = closePrice;
+            } else {
+                eMAShort = eMAShort * (1 - 2.0f / (shortNum + 1)) + closePrice * 2.0f / (shortNum + 1);
+                eMALong = eMALong * (1 - 2.0f / (longNum + 1)) + closePrice * 2.0f / (longNum + 1);
+            }
+            dIF = eMAShort - eMALong;
+            dEA = dEA * (1 - 2.0f / (mNum + 1)) + dIF * 2.0f / (mNum + 1);
+            mACD = dIF - dEA;
+            dEAs.add(dEA);
+            dIFs.add(dIF);
+            mACDs.add(mACD);
         }
-        return candleEntryList;
+
+        int[] colors = new int[stockDataList.size()];
+        for (int i = 0; i < dEAs.size(); i++) {
+            int colorIdx =  mACDs.get(i) > 0  ? 0 : 1;
+            colors[i] = colorArr[colorIdx];
+            deaBarEntries.add(new Entry(i, dEAs.get(i)));
+            difBarEntries.add(new Entry(i, dIFs.get(i)));
+            madcBarEntries.add(new BarEntry(i, mACDs.get(i)));
+        }
+
+        BarDataSet barDataSet = new BarDataSet(madcBarEntries, "柱图");
+        barDataSet.setDrawValues(false);
+        //设置数值选择是的颜色
+        barDataSet.setHighLightColor(ContextCompat.getColor(getContext(), R.color.stockUp));
+        barDataSet.setHighlightEnabled(true);
+        barDataSet.setColors(colors);
+        BarData barData = new BarData(barDataSet);
+        CombinedData barCombinedData = new CombinedData();
+        barCombinedData.setData(barData);
+
+        List<ILineDataSet> lineDataMA = new ArrayList<>();
+        lineDataMA.add(getTestLineMAData(deaBarEntries, "dea", ma5Color));
+        lineDataMA.add(getTestLineMAData(difBarEntries, "dif", ma10Color));
+        LineData lineData = new LineData(lineDataMA);
+
+        barCombinedData.setData(lineData);
+        barCombinedData.setData(new CandleData());
+        return barCombinedData;
+    }
+
+    private CombinedData getTestBarKDJData() {
+        int n = 9;
+        int m1 = 3;
+        int m2 = 3;
+        List<List<String>> stockDataList = getStockDataList();
+        ArrayList<Entry> kEntries = new ArrayList<>(stockDataList.size());
+        ArrayList<Entry> dEntries = new ArrayList<>(stockDataList.size());
+        ArrayList<Entry> jEntries = new ArrayList<>(stockDataList.size());
+
+        List<Float> kValues = new ArrayList<Float>();
+        List<Float> dValues = new ArrayList<Float>();
+        List<Float> jValues = new ArrayList<Float>();
+
+        float k = 50.0f;
+        float d = 50.0f;
+        float j = 0.0f;
+        float rSV = 0.0f;
+
+        if (stockDataList != null && stockDataList.size() > 0) {
+            float highPrice = 0f, lowPrice = 0f, currentHighPrice = 0f, currentLowPrice = 0f, closePrice = 0f;
+            for (int i = 0; i < stockDataList.size(); i++) {
+                List<String> stockData = stockDataList.get(i);
+                currentHighPrice = Float.parseFloat(stockData.get(2));
+                currentLowPrice = Float.parseFloat(stockData.get(3));
+                closePrice = Float.parseFloat(stockData.get(4));
+
+                if (0 == i) {
+                    highPrice = currentHighPrice;
+                    lowPrice = currentLowPrice;
+                }
+                if (i > 0) {
+                    if (n == 0) {
+                        highPrice = highPrice > currentHighPrice ? highPrice : currentHighPrice;
+                        lowPrice = lowPrice < currentLowPrice ? lowPrice : currentLowPrice;
+                    } else {
+                        int t = i - n + 1;
+                        Float[] wrs = getHighAndLowByK(t, i);
+                        highPrice = wrs[0];
+                        lowPrice = wrs[1];
+                    }
+                }
+                if (highPrice != lowPrice) {
+                    rSV = (float) ((closePrice - lowPrice) / (highPrice - lowPrice) * 100);
+                } else {
+                    rSV = 0;
+                }
+                k = k * (m1 - 1.0f) / m1 + rSV / m1;
+                d = d * (m2 - 1.0f) / m2 + k / m2;
+                j = (3 * k) - (2 * d);
+
+                //其他软件没有大于100小于0的值，但是我算出来确实有，其它软件在0和100的时候出现直线，怀疑也是做了处理
+                j = j < 0 ? 0 : j;
+                j = j > 100 ? 100 : j;
+
+                kValues.add(k);
+                dValues.add(d);
+                jValues.add(j);
+            }
+            for (int i = 0; i < kValues.size(); i++) {
+                kEntries.add(new Entry(i, kValues.get(i)));
+                dEntries.add(new Entry(i, dValues.get(i)));
+                jEntries.add(new Entry(i, jValues.get(i)));
+            }
+        }
+
+        List<ILineDataSet> lineDataMA = new ArrayList<>();
+        LineDataSet kILineDataSet = getTestLineMAData(kEntries, "K", ma5Color);
+        kILineDataSet.setHighlightEnabled(true);
+        kILineDataSet.setHighLightColor(colorArr[0]);
+        kILineDataSet.setDrawVerticalHighlightIndicator(true);
+        lineDataMA.add(kILineDataSet);
+        lineDataMA.add(getTestLineMAData(dEntries, "D", ma10Color));
+        lineDataMA.add(getTestLineMAData(jEntries, "J", ma20Color));
+        LineData lineData = new LineData(lineDataMA);
+        CombinedData barCombinedData = new CombinedData();
+        barCombinedData.setData(new BarData());
+        barCombinedData.setData(lineData);
+        barCombinedData.setData(new CandleData());
+        return barCombinedData;
+    }
+
+    /**
+     * 得到某区间内最高价和最低价
+     *
+     * @param a          开始位置 可以为0
+     * @param b          结束位置
+     * @return
+     */
+    private Float[] getHighAndLowByK(Integer a, Integer b) {
+        if (a < 0) {
+            a = 0;
+        }
+        List<List<String>> stockDataList = getStockDataList();
+        List<String> stockData = stockDataList.get(a);
+        float high = Float.parseFloat(stockData.get(2));
+        float low = Float.parseFloat(stockData.get(3));
+        Float[] wrs = new Float[2];
+        for (int i = a; i <= b; i++) {
+            stockData = stockDataList.get(i);
+            float currentHighPrice = Float.parseFloat(stockData.get(2));
+            float currentLowPrice = Float.parseFloat(stockData.get(3));
+            high = high > currentHighPrice ? high : currentHighPrice;
+            low = low < currentLowPrice ? low : currentLowPrice;
+        }
+
+        wrs[0] = high;
+        wrs[1] = low;
+        return wrs;
+    }
+
+    private CombinedData getTestBarBOLLData() {
+        CandleDataSet candleDataSet = new CandleDataSet(getCandleEntryList(), "蜡烛线");
+        candleDataSet.setDrawHorizontalHighlightIndicator(true);
+        candleDataSet.setHighlightEnabled(true);
+        candleDataSet.setHighLightColor(ContextCompat.getColor(getContext(), R.color.stockUp));
+        candleDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        candleDataSet.setDecreasingColor(ContextCompat.getColor(getContext(), R.color.stockDown));
+        candleDataSet.setDecreasingPaintStyle(Paint.Style.FILL);
+        candleDataSet.setIncreasingColor(ContextCompat.getColor(getContext(), R.color.stockUp));
+        candleDataSet.setIncreasingPaintStyle(Paint.Style.FILL);
+        candleDataSet.setNeutralColor(ContextCompat.getColor(getContext(), R.color.stockFlat));
+        candleDataSet.setShadowColorSameAsCandle(true);
+        candleDataSet.setValueTextSize(10);
+        candleDataSet.setDrawValues(false);
+
+        List<List<String>> stockDataList = getStockDataList();
+        float ma = 0.0f;
+        float md = 0.0f;
+        float mb = 0.0f;
+        float up = 0.0f;
+        float dn = 0.0f;
+        int boolNum = 26;
+        float defult = 0;
+
+        ArrayList<Float> ups = new ArrayList<>(stockDataList.size());
+        ArrayList<Float> mbs = new ArrayList<>(stockDataList.size());
+        ArrayList<Float> dns = new ArrayList<>(stockDataList.size());
+
+        if (stockDataList != null && stockDataList.size() > 0) {
+            float closeSum = 0.0f;
+            float sum = 0.0f;
+            int index = 0;
+            int index2 = boolNum - 1;
+            for (int i = 0; i < stockDataList.size(); i++) {
+                float closePrice = Float.parseFloat(stockDataList.get(i).get(4));
+                int k = i - boolNum + 1;
+                if (i >= boolNum) {
+                    index = boolNum;
+                } else {
+                    index = i + 1;
+                }
+                closeSum = getSumClose(k, i);
+                ma = closeSum / index;
+                sum = getSum(k, i, ma);
+                md = (float) Math.sqrt(sum / index);
+                mb = ((closeSum - closePrice) / (index - 1));
+                up = mb + (2 * md);
+                dn = mb - (2 * md);
+
+                if (i < index2) {
+                    mb = defult;
+                    up = defult;
+                    dn = defult;
+                }
+                ups.add(up);
+                mbs.add(mb);
+                dns.add(dn);
+            }
+        }
+
+        ArrayList<Entry> upEntries = new ArrayList<>(stockDataList.size());
+        ArrayList<Entry> mbEntries = new ArrayList<>(stockDataList.size());
+        ArrayList<Entry> dnEntries = new ArrayList<>(stockDataList.size());
+
+        for (int i = 0; i < ups.size(); i++) {
+            upEntries.add(new Entry(i, ups.get(i)));
+            mbEntries.add(new Entry(i, mbs.get(i)));
+            dnEntries.add(new Entry(i, dns.get(i)));
+        }
+
+        List<ILineDataSet> lineDataMA = new ArrayList<>();
+        LineDataSet kILineDataSet = getTestLineMAData(dnEntries, "K", ma20Color);
+        kILineDataSet.setHighlightEnabled(true);
+        kILineDataSet.setHighLightColor(colorArr[0]);
+        kILineDataSet.setDrawVerticalHighlightIndicator(true);
+        lineDataMA.add(kILineDataSet);
+        lineDataMA.add(getTestLineMAData(upEntries, "up", ma5Color));
+        lineDataMA.add(getTestLineMAData(mbEntries, "mb", ma10Color));
+        LineData lineData = new LineData(lineDataMA);
+
+        CombinedData barCombinedData = new CombinedData();
+        barCombinedData.setData(new BarData());
+        barCombinedData.setData(lineData);
+        barCombinedData.setData(new CandleData(candleDataSet));
+        return barCombinedData;
+    }
+
+    private Float getSum(Integer a, Integer b, Float ma) {
+        if (a < 0) {
+            a = 0;
+        }
+        List<List<String>> stockDataList = getStockDataList();
+        float sum = 0.0f;
+        for (int i = a; i <= b; i++) {
+            float closePrice = Float.parseFloat(stockDataList.get(i).get(4));
+            sum += ((closePrice - ma) * (closePrice - ma));
+        }
+        return sum;
+    }
+
+    private Float getSumClose(Integer a, Integer b) {
+        if (a < 0) {
+            a = 0;
+        }
+        List<List<String>> stockDataList = getStockDataList();
+        float close = 0.0f;
+        for (int i = a; i <= b; i++) {
+            float closePrice = Float.parseFloat(stockDataList.get(i).get(4));
+            close += closePrice;
+        }
+
+        return close;
+    }
+
+    private CombinedData getTestBarRSIData() {
+        ArrayList<Entry> firstRSIEntries = getRSIEntryList(6, 0f);
+        ArrayList<Entry> secondRSIEntries = getRSIEntryList(12, 0f);
+        ArrayList<Entry> thirdRSIEntries = getRSIEntryList(24, 0f);
+
+        List<ILineDataSet> lineDataMA = new ArrayList<>();
+        lineDataMA.add(getTestLineMAData(firstRSIEntries, "D", ma5Color));
+        lineDataMA.add(getTestLineMAData(secondRSIEntries, "J", ma10Color));
+        LineDataSet kILineDataSet = getTestLineMAData(thirdRSIEntries, "K", ma20Color);
+        kILineDataSet.setHighlightEnabled(true);
+        kILineDataSet.setHighLightColor(colorArr[0]);
+        kILineDataSet.setDrawVerticalHighlightIndicator(true);
+        lineDataMA.add(kILineDataSet);
+        LineData lineData = new LineData(lineDataMA);
+        CombinedData barCombinedData = new CombinedData();
+        barCombinedData.setData(new BarData());
+        barCombinedData.setData(lineData);
+        barCombinedData.setData(new CandleData());
+        return barCombinedData;
+    }
+
+    private ArrayList<Entry> getRSIEntryList(int n, float defaultValue) {
+        List<List<String>> stockDataList = getStockDataList();
+        ArrayList<Entry> rsiEntries = new ArrayList<>(stockDataList.size());
+        float sum = 0.0f;
+        float dif = 0.0f;
+        float rs = 0.0f;
+        float rsi = 0.0f;
+        int index = n - 1;
+        if (stockDataList != null && stockDataList.size() > 0) {
+            for (int i = 0; i < stockDataList.size(); i++) {
+                if (n == 0) {
+                    sum = 0.0f;
+                    dif = 0.0f;
+                } else {
+                    int k = i - n + 1;
+                    Float[] wrs = getAAndB(k, i);
+                    sum = wrs[0];
+                    dif = wrs[1];
+                }
+                if (dif != 0) {
+                    float h = sum + dif;
+                    rsi = sum / h * 100;
+                } else {
+                    rsi = 100;
+                }
+
+                if (i < index) {
+                    rsi = defaultValue;
+                }
+                rsiEntries.add(new Entry(i, rsi));
+            }
+        }
+        return rsiEntries;
+    }
+
+    private Float[] getAAndB(Integer a, Integer b) {
+        if (a < 0) {
+            a = 0;
+        }
+        float sum = 0.0f;
+        float dif = 0.0f;
+        float closeT, closeY;
+        Float[] abs = new Float[2];
+        List<List<String>> stockDataList = getStockDataList();
+        for (int i = a; i <= b; i++) {
+            if (i > a) {
+                closeT = Float.parseFloat(stockDataList.get(i).get(4));
+                closeY = Float.parseFloat(stockDataList.get(i - 1).get(4));
+
+                float c = closeT - closeY;
+                if (c > 0) {
+                    sum = sum + c;
+                } else {
+                    dif = sum + c;
+                }
+
+                dif = Math.abs(dif);
+            }
+        }
+
+        abs[0] = sum;
+        abs[1] = dif;
+        return abs;
     }
 
     private List<List<String>> getStockDataList() {
