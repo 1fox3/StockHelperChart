@@ -7,3 +7,5 @@
 /captures
 .externalNativeBuild
 .cxx
+/app/libs
+/common/libs

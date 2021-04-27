@@ -56,6 +56,18 @@ public class BaseStockChart extends LinearLayout {
      */
     public static final String NO_DATA_STR = "加载中...";
     /**
+     * 长色
+     */
+    protected int upColor;
+    /**
+     * 降色
+     */
+    protected int downColor;
+    /**
+     * 平色
+     */
+    protected int flatColor;
+    /**
      * 颜色数组
      */
     protected int[] colorArr;
@@ -75,9 +87,17 @@ public class BaseStockChart extends LinearLayout {
      * 价格线颜色
      */
     protected int priceLineColor;
+    /**
+     * 价格均值线颜色
+     */
+    protected int avgPriceLineColor;
     protected int ma5Color;
     protected int ma10Color;
     protected int ma20Color;
+    /**
+     * 高亮颜色
+     */
+    protected int highlightColor;
     /**
      * 线图X轴
      */
@@ -122,11 +142,10 @@ public class BaseStockChart extends LinearLayout {
     protected void initChart()
     {
         Context context = getContext();
-        colorArr = new int[] {
-                ContextCompat.getColor(context, R.color.stockUp),
-                ContextCompat.getColor(context, R.color.stockDown),
-                ContextCompat.getColor(context, R.color.stockFlat),
-        };
+        upColor = ContextCompat.getColor(context, R.color.stockUp);
+        downColor = ContextCompat.getColor(context, R.color.stockDown);
+        flatColor = ContextCompat.getColor(context, R.color.stockFlat);
+        colorArr = new int[] {upColor, downColor, flatColor,};
         maColorArr = new int[] {
                 ContextCompat.getColor(context, R.color.ma5),
                 ContextCompat.getColor(context, R.color.ma10),
@@ -136,9 +155,11 @@ public class BaseStockChart extends LinearLayout {
         borderColor = ContextCompat.getColor(context, R.color.chartBorder);
         zeroLineColor = ContextCompat.getColor(context, R.color.zeroLine);
         priceLineColor = ContextCompat.getColor(context, R.color.priceLine);
+        avgPriceLineColor = ContextCompat.getColor(context, R.color.avgPriceLine);
         ma5Color = ContextCompat.getColor(context, R.color.ma5);
         ma10Color = ContextCompat.getColor(context, R.color.ma10);
         ma20Color = ContextCompat.getColor(context, R.color.ma20);
+        highlightColor = ContextCompat.getColor(context, R.color.highlight);
     }
 
 

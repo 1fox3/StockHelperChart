@@ -13,6 +13,7 @@
     <color name="zeroLine">#BFBDBD</color>
     <!--价格线颜色-->
     <color name="priceLine">#454141</color>
+    <color name="avgPriceLine">#D69F9F</color>
     <!--MarkerView颜色-->
     <color name="markerViewStrBg">#406ebc</color>
     <color name="markerViewStrText">#FFFFFF</color>
@@ -21,4 +22,6 @@
     <color name="ma10">#E9967A</color>
     <color name="ma20">#8d4bbb</color>
     <color name="ma30">#804000</color>
+    <!--高亮线颜色-->
+    <color name="highlight">#E9403C</color>
 </resources>
