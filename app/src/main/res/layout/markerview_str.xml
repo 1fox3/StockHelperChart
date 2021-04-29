@@ -3,13 +3,14 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <TextView
         android:id="@+id/markerViewStrTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/markerViewStrText"
         android:textSize="@dimen/markerViewStrTextSize"
-        android:text="aaaaaa"
+        android:text=""
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
         android:background="@color/markerViewStrBg"/>

@@ -359,7 +359,7 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
      */
     private void setLineDataSet(List<Entry> priceLine, List<Entry> avgPriceLine) {
         //价格线
-        LineDataSet priceLineDataSet = new LineDataSet(priceLine, "价格线图");
+        LineDataSet priceLineDataSet = new LineDataSet(priceLine, "价格");
         //不显示圆圈
         priceLineDataSet.setDrawCircles(false);
         //不显示数值
@@ -371,7 +371,7 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
         //设置数值选择是的颜色
         priceLineDataSet.setHighLightColor(highlightColor);
         //均值线
-        LineDataSet avgPriceLineDataSet = new LineDataSet(avgPriceLine, "价格线图");
+        LineDataSet avgPriceLineDataSet = new LineDataSet(avgPriceLine, "均价");
         //不显示圆圈
         avgPriceLineDataSet.setDrawCircles(false);
         //不显示数值
@@ -393,7 +393,7 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
      * @param barColors
      */
     private void setBarDataSet(List<BarEntry> barEntryList, int[] barColors) {
-        BarDataSet barDataSet = new BarDataSet(barEntryList, "柱图");
+        BarDataSet barDataSet = new BarDataSet(barEntryList, "成交量");
         barDataSet.setColors(barColors);
         barDataSet.setHighlightEnabled(true);
         //设置数值选择是的颜色

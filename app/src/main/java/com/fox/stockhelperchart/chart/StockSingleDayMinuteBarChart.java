@@ -17,7 +17,7 @@ import com.github.mikephil.charting.components.YAxis;
  * @author lusongsong
  * @date 2021/2/26 15:09
  */
-public class StockSingleDayMinuteBarChart extends BarChart {
+public class StockSingleDayMinuteBarChart extends StockMinuteBarChart {
     public StockSingleDayMinuteBarChart(Context context) {
         super(context);
         initSelf();

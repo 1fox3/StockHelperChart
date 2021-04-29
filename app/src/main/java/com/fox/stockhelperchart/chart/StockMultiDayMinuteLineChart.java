@@ -27,7 +27,7 @@ import static com.fox.stockhelperchart.StockMultiDayMinuteChart.DAY_NUM;
  * @author lusongsong
  * @date 2021/3/26 15:11
  */
-public class StockMultiDayMinuteLineChart extends LineChart {
+public class StockMultiDayMinuteLineChart extends StockMinuteLineChart {
     public StockMultiDayMinuteLineChart(Context context) {
         super(context);
         initSelf();

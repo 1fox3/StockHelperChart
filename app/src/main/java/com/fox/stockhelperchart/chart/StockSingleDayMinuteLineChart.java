@@ -22,7 +22,7 @@ import static com.fox.stockhelperchart.BaseStockChart.NO_DATA_STR;
  * @author lusongsong
  * @date 2021/2/25 18:04
  */
-public class StockSingleDayMinuteLineChart extends LineChart {
+public class StockSingleDayMinuteLineChart extends StockMinuteLineChart {
     public StockSingleDayMinuteLineChart(Context context) {
         super(context);
         initSelf();

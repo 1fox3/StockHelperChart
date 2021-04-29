@@ -54,8 +54,7 @@ public class MinuteKLineActivity extends AppCompatActivity {
                         new StockSpiderRealtimeMinuteKLineApi();
                 stockMinuteKLinePo =
                         stockSpiderRealtimeMinuteKLineApi
-                                .realtimeMinuteKLine(new StockVo("600986", StockConst.SM_A));
-                System.out.println(stockMinuteKLinePo);
+                                .realtimeMinuteKLine(new StockVo("603383", StockConst.SM_A));
                 stockSingleDayMinuteChart.setStockMinuteKLineData(stockMinuteKLinePo);
             }
         };
