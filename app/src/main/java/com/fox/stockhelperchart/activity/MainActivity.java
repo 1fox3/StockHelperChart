@@ -7,7 +7,6 @@ import butterknife.OnClick;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -43,10 +42,10 @@ public class MainActivity extends AppCompatActivity {
         Class desClass = null;
         switch (view.getId()) {
             case R.id.minuteKLineBtn:
-                desClass = MinuteKLineActivity.class;
+                desClass = SingleDayMinuteChartActivity.class;
                 break;
             case R.id.fiveDayKLineBtn:
-                desClass = FiveDayKLineActivity.class;
+                desClass = MultiDayMinuteChartActivity.class;
                 break;
             default:
                 desClass = KLineActivity.class;

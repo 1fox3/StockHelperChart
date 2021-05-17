@@ -1,18 +1,15 @@
 package com.fox.stockhelperchart.activity;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 
-import com.fox.spider.stock.api.nets.NetsRealtimeMinuteKLineApi;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.fox.spider.stock.constant.StockConst;
 import com.fox.spider.stock.entity.vo.StockVo;
 import com.fox.stockhelperchart.R;
 import com.fox.stockhelperchart.StockSingleDayMinuteChart;
 import com.fox.stockhelpercommon.entity.stock.po.StockMinuteKLinePo;
 import com.fox.stockhelpercommon.spider.out.StockSpiderRealtimeMinuteKLineApi;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,7 +21,7 @@ import lombok.SneakyThrows;
  * @author lusongsong
  * @date 2021/2/25 16:40
  */
-public class MinuteKLineActivity extends AppCompatActivity {
+public class SingleDayMinuteChartActivity extends AppCompatActivity {
     @BindView(R.id.stockSingleDayMinuteChart)
     StockSingleDayMinuteChart stockSingleDayMinuteChart;
     /**
@@ -37,15 +34,15 @@ public class MinuteKLineActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_minute_kline);
-        ButterKnife.bind(MinuteKLineActivity.this);
+        ButterKnife.bind(SingleDayMinuteChartActivity.this);
         stockSingleDayMinuteChart.initChart();
-        handleStockMinuteKLine();
+        handleStockSingleDayMinuteKLine();
     }
 
     /**
-     * 刷新交易价格线图信息
+     * 补充单天分钟线图数据
      */
-    private void handleStockMinuteKLine() {
+    private void handleStockSingleDayMinuteKLine() {
         Runnable stockMinuteKLineRunnable = new Runnable() {
             @SneakyThrows
             @Override

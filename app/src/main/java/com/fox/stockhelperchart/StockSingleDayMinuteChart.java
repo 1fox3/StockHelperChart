@@ -337,7 +337,7 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
                 timeMarkerStrArr[i] = getMarkerViewStr(timeMarkerList);
                 List<Object> barMarkerList = new ArrayList<>();
                 barMarkerList.add(currentTime);
-                barMarkerList.add(Arrays.asList(CHART_LABEL_DEAL_NUM_BAR, String.valueOf(dealNum)));
+                barMarkerList.add(Arrays.asList(CHART_LABEL_DEAL_NUM_BAR, String.valueOf((int)dealNum)));
                 barMarkerStrArr[i] = getMarkerViewStr(barMarkerList);
             }
             //设置线图数据

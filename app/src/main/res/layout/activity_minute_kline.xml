@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".activity.MinuteKLineActivity">
+    tools:context=".activity.SingleDayMinuteChartActivity">
 
     <com.fox.stockhelperchart.StockSingleDayMinuteChart
         android:id="@+id/stockSingleDayMinuteChart"

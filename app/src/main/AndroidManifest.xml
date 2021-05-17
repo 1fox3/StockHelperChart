@@ -19,8 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MinuteKLineActivity" />
-        <activity android:name=".activity.FiveDayKLineActivity" />
+        <activity android:name=".activity.SingleDayMinuteChartActivity" />
+        <activity android:name=".activity.MultiDayMinuteChartActivity" />
         <activity android:name=".activity.KLineActivity" />
     </application>
 
