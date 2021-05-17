@@ -330,13 +330,12 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
                 }
                 upPrice = currentPrice;
                 //创建提示文案
-                List timeMarkerList = new ArrayList();
+                List<Object> timeMarkerList = new ArrayList<>();
                 timeMarkerList.add(currentTime);
                 timeMarkerList.add(Arrays.asList(CHART_LABEL_PRICE_LINE, currentPrice.toString()));
                 timeMarkerList.add(Arrays.asList(CHART_LABEL_AVG_PRICE_LINE, String.valueOf(avgPrice)));
                 timeMarkerStrArr[i] = getMarkerViewStr(timeMarkerList);
-                //创建提示文案
-                List barMarkerList = new ArrayList();
+                List<Object> barMarkerList = new ArrayList<>();
                 barMarkerList.add(currentTime);
                 barMarkerList.add(Arrays.asList(CHART_LABEL_DEAL_NUM_BAR, String.valueOf(dealNum)));
                 barMarkerStrArr[i] = getMarkerViewStr(barMarkerList);

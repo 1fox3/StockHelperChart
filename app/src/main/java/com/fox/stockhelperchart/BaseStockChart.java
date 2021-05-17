@@ -195,7 +195,7 @@ public class BaseStockChart extends LinearLayout {
      * @param markerInfoList
      * @return
      */
-    protected String getMarkerViewStr(List markerInfoList) {
+    protected String getMarkerViewStr(List<Object> markerInfoList) {
         if (null == markerInfoList || markerInfoList.isEmpty()) {
             return "";
         }
