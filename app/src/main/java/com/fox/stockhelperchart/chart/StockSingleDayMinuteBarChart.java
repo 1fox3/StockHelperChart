@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import com.fox.stockhelperchart.R;
 import com.fox.stockhelperchart.markerview.StockMarkerView;
 import com.fox.stockhelperchart.renderer.chart.StockSingleDayMinuteBarChartRenderer;
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;

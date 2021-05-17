@@ -10,7 +10,6 @@ import com.fox.stockhelperchart.formatter.StockXAxisFormatter;
 import com.fox.stockhelperchart.markerview.StockMarkerView;
 import com.fox.stockhelperchart.renderer.chart.StockMultiDayMinuteLineChartRenderer;
 import com.fox.stockhelperchart.renderer.xaxis.StockMultiDayMinuteLineXAxisRenderer;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;

@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import com.fox.stockhelperchart.chart.StockSingleDayMinuteBarChart;
 import com.fox.stockhelperchart.chart.StockSingleDayMinuteLineChart;
 import com.fox.stockhelperchart.formatter.StockPriceFormatter;
+import com.fox.stockhelperchart.markerview.StockMarkerView;
 import com.fox.stockhelperchart.renderer.yaxis.StockSingleDayMinuteBarYAxisRenderer;
 import com.fox.stockhelperchart.renderer.yaxis.StockSingleDayMinuteLineYAxisRenderer;
 import com.fox.stockhelpercommon.entity.stock.po.StockMinuteKLineNodePo;
@@ -25,9 +26,12 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -273,6 +277,8 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
         if (null != stockMinuteKLineData && null != stockMinuteKLineData.getKlineData()
         && !stockMinuteKLineData.getKlineData().isEmpty()) {
             int nodeLen = stockMinuteKLineData.getKlineData().size();
+            String[] timeMarkerStrArr = new String[nodeLen];
+            String[] barMarkerStrArr = new String[nodeLen];
             List<Entry> priceLine = new ArrayList<>(nodeLen);
             List<Entry> avgPriceLine = new ArrayList<>(nodeLen);
             List<BarEntry> barEntryList = new ArrayList<>(nodeLen);
@@ -286,6 +292,7 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
             for (int i = 0; i < nodeLen; i++) {
                 StockMinuteKLineNodePo stockChartMinuteNodeDataPo =
                         stockMinuteKLineData.getKlineData().get(i);
+                String currentTime = stockChartMinuteNodeDataPo.getTime();
                 BigDecimal currentPrice = stockChartMinuteNodeDataPo.getPrice();
                 Long currentDealNum = stockChartMinuteNodeDataPo.getDealNum();
                 priceLine.add(new Entry(i, currentPrice.floatValue()));
@@ -296,14 +303,10 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
                                 new BigDecimal(currentDealNum)
                         )
                 );
-                avgPriceLine.add(
-                        new Entry(
-                                i,
-                                totalDealMoney.divide(
-                                        totalDealNum, 2, RoundingMode.HALF_UP
-                                ).floatValue()
-                        )
-                );
+                float avgPrice = totalDealMoney.divide(
+                        totalDealNum, 2, RoundingMode.HALF_UP
+                ).floatValue();
+                avgPriceLine.add(new Entry(i, avgPrice));
                 int priceCompare = currentPrice.compareTo(upPrice);
                 if (priceCompare >= 1) {
                     barColors[i] = upColor;
@@ -312,7 +315,8 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
                 } else {
                     barColors[i] = flatColor;
                 }
-                barEntryList.add(new BarEntry(i, currentDealNum/100));
+                float dealNum = currentDealNum/100;
+                barEntryList.add(new BarEntry(i, dealNum));
                 int highPriceCompare = currentPrice.compareTo(highPrice);
                 if (highPriceCompare >= 1) {
                     highPrice = currentPrice;
@@ -325,6 +329,17 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
                     highDealNum = currentDealNum;
                 }
                 upPrice = currentPrice;
+                //创建提示文案
+                List timeMarkerList = new ArrayList();
+                timeMarkerList.add(currentTime);
+                timeMarkerList.add(Arrays.asList(CHART_LABEL_PRICE_LINE, currentPrice.toString()));
+                timeMarkerList.add(Arrays.asList(CHART_LABEL_AVG_PRICE_LINE, String.valueOf(avgPrice)));
+                timeMarkerStrArr[i] = getMarkerViewStr(timeMarkerList);
+                //创建提示文案
+                List barMarkerList = new ArrayList();
+                barMarkerList.add(currentTime);
+                barMarkerList.add(Arrays.asList(CHART_LABEL_DEAL_NUM_BAR, String.valueOf(dealNum)));
+                barMarkerStrArr[i] = getMarkerViewStr(barMarkerList);
             }
             //设置线图数据
             setLineDataSet(priceLine, avgPriceLine);
@@ -348,6 +363,8 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
             barChart.notifyDataSetChanged();
             lineChart.postInvalidate();
             barChart.postInvalidate();
+            ((StockMarkerView)lineChart.getMarker()).setMarkerStrArr(timeMarkerStrArr);
+            ((StockMarkerView)barChart.getMarker()).setMarkerStrArr(barMarkerStrArr);
         }
     }
 
@@ -359,7 +376,7 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
      */
     private void setLineDataSet(List<Entry> priceLine, List<Entry> avgPriceLine) {
         //价格线
-        LineDataSet priceLineDataSet = new LineDataSet(priceLine, "价格");
+        LineDataSet priceLineDataSet = new LineDataSet(priceLine, CHART_LABEL_PRICE_LINE);
         //不显示圆圈
         priceLineDataSet.setDrawCircles(false);
         //不显示数值

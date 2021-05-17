@@ -13,8 +13,22 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
 
+/**
+ * 股票文案提示
+ *
+ * @author lusongsong
+ * @date 2021/3/25 17:13
+ */
 public class StockMarkerView extends MarkerView {
+    /**
+     * 提示文案数组
+     */
+    String[] markerStrArr = null;
+    /**
+     * 提示文案的显示组件
+     */
     TextView markerViewStrTV;
+
     /**
      * Constructor. Sets up the MarkerView with a custom layout resource.
      *
@@ -26,15 +40,29 @@ public class StockMarkerView extends MarkerView {
         markerViewStrTV = findViewById(R.id.markerViewStrTV);
     }
 
+    /**
+     * 设置提示文案
+     *
+     * @param markerStrArr
+     */
+    public void setMarkerStrArr(String[] markerStrArr) {
+        this.markerStrArr = markerStrArr;
+    }
+
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
-        ChartData chartData = (ChartData) getChartView().getData();
-        int setCount = chartData.getDataSetCount();
         String markerViewText = "";
-        for (int i = 0; i < setCount; i++) {
-            DataSet dataSet = (DataSet) chartData.getDataSetByIndex(i);
-            markerViewText += dataSet.getLabel() + "" + dataSet.getEntryForIndex((int)e.getX()).getY();
+        if (null == markerStrArr) {
+            ChartData chartData = (ChartData) getChartView().getData();
+            int setCount = chartData.getDataSetCount();
+            for (int i = 0; i < setCount; i++) {
+                DataSet dataSet = (DataSet) chartData.getDataSetByIndex(i);
+                markerViewText += dataSet.getLabel() + "" + dataSet.getEntryForIndex((int) e.getX()).getY();
+            }
+        } else {
+            markerViewText = markerStrArr[(int) e.getX()];
         }
+
         markerViewStrTV.setText(markerViewText);
     }
 
@@ -53,7 +81,7 @@ public class StockMarkerView extends MarkerView {
     public MPPointF getOffset() {
         RectF rectF = getChartView().getViewPortHandler().getContentRect();
         return new MPPointF(
-                (rectF.left + rectF.right)/2 - (int)(getWidth()/2),
+                (rectF.left + rectF.right) / 2 - (int) (getWidth() / 2),
                 rectF.top
         );
     }

@@ -10,7 +10,11 @@ import androidx.core.content.ContextCompat;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 
+import java.util.List;
+
 /**
+ * 股票图表基类
+ *
  * @author lusongsong
  * @date 2021/2/26 16:08
  */
@@ -55,6 +59,18 @@ public class BaseStockChart extends LinearLayout {
      * 无数据默认显示的字符串
      */
     public static final String NO_DATA_STR = "加载中...";
+    /**
+     * 图表价格线图名称
+     */
+    public static final String CHART_LABEL_PRICE_LINE = "价格";
+    /**
+     * 图表均价线图名称
+     */
+    public static final String CHART_LABEL_AVG_PRICE_LINE = "均价";
+    /**
+     * 图表成交量柱图名称
+     */
+    public static final String CHART_LABEL_DEAL_NUM_BAR = "成交量";
     /**
      * 长色
      */
@@ -139,14 +155,13 @@ public class BaseStockChart extends LinearLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    protected void initChart()
-    {
+    protected void initChart() {
         Context context = getContext();
         upColor = ContextCompat.getColor(context, R.color.stockUp);
         downColor = ContextCompat.getColor(context, R.color.stockDown);
         flatColor = ContextCompat.getColor(context, R.color.stockFlat);
-        colorArr = new int[] {upColor, downColor, flatColor,};
-        maColorArr = new int[] {
+        colorArr = new int[]{upColor, downColor, flatColor,};
+        maColorArr = new int[]{
                 ContextCompat.getColor(context, R.color.ma5),
                 ContextCompat.getColor(context, R.color.ma10),
                 ContextCompat.getColor(context, R.color.ma20),
@@ -172,5 +187,32 @@ public class BaseStockChart extends LinearLayout {
      */
     protected float random(double min, double max) {
         return (float) (Math.random() * (max - min) + min);
+    }
+
+    /**
+     * 获取提示文案
+     *
+     * @param markerInfoList
+     * @return
+     */
+    protected String getMarkerViewStr(List markerInfoList) {
+        if (null == markerInfoList || markerInfoList.isEmpty()) {
+            return "";
+        }
+        StringBuilder markerBuilder = new StringBuilder();
+        for (int i = 0; i < markerInfoList.size(); i++) {
+            Object infoObj = markerInfoList.get(i);
+            if (0 != i) {
+                markerBuilder.append(" ");
+            }
+            if (infoObj instanceof List) {
+                markerBuilder.append((String)(((List) infoObj).get(0)));
+                markerBuilder.append(":");
+                markerBuilder.append((String)(((List) infoObj).get(1)));
+            } else {
+                markerBuilder.append((String) infoObj);
+            }
+        }
+        return markerBuilder.toString();
     }
 }
