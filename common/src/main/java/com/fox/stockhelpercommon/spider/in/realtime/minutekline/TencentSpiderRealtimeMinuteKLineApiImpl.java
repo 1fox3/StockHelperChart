@@ -42,8 +42,6 @@ public class TencentSpiderRealtimeMinuteKLineApiImpl
     @Override
     public StockMinuteKLinePo realtimeMinuteKLine(StockVo stockVo) {
         try {
-            System.out.println("aaaa");
-            System.out.println(tencentRealtimeMinuteKLineApi.realtimeMinuteKLine(stockVo));
             return convertObj(tencentRealtimeMinuteKLineApi.realtimeMinuteKLine(stockVo));
         } catch (Exception e) {
             logger.error(stockVo.toString(), e);

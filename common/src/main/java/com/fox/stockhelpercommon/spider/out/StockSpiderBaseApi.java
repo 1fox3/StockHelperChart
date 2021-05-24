@@ -90,18 +90,18 @@ public class StockSpiderBaseApi {
             beanMap = new LinkedHashMap<String, StockSpiderApiBaseInterface>();
             for (List<Serializable> implList : implClassList) {
                 try {
-                    String beanName = ((Class)implList.get(0)).getSimpleName();
+                    String beanName = ((Class) implList.get(0)).getSimpleName();
                     StockSpiderApiBaseInterface bean =
-                            ((Class<StockSpiderApiBaseInterface>)implList.get(0)).newInstance();
+                            ((Class<StockSpiderApiBaseInterface>) implList.get(0)).newInstance();
                     beanMap.put(beanName, bean);
-                    if ((boolean)implList.get(1)) {
+                    if ((boolean) implList.get(1)) {
                         primaryBean = bean;
                     }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 } catch (InstantiationException e) {
                     e.printStackTrace();
-                };
+                }
             }
         }
     }
