@@ -4,6 +4,7 @@ import com.fox.spider.stock.entity.vo.StockVo;
 import com.fox.stockhelpercommon.entity.stock.po.StockMinuteKLinePo;
 import com.fox.stockhelpercommon.spider.in.StockSpiderFiveDayMinuteKLineApiInterface;
 import com.fox.stockhelpercommon.spider.in.fiveday.IFengSpiderFiveDayMinuteKLineApiImpl;
+import com.fox.stockhelpercommon.spider.in.fiveday.TencentSpiderFiveDayMinuteKLineApiImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,8 +27,8 @@ public class StockSpiderFiveDayMinuteKLineApi extends StockSpiderBaseApi {
      */
     public StockSpiderFiveDayMinuteKLineApi() {
         implClassList = Arrays.asList(
-                Arrays.asList(IFengSpiderFiveDayMinuteKLineApiImpl.class, true)
-//                Arrays.asList(TencentSpiderFiveDayMinuteKLineApiImpl.class, true)
+//                Arrays.asList(IFengSpiderFiveDayMinuteKLineApiImpl.class, true)
+                Arrays.asList(TencentSpiderFiveDayMinuteKLineApiImpl.class, true)
         );
     }
 

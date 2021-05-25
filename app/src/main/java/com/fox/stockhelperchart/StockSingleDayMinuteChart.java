@@ -275,7 +275,7 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
      */
     public void setStockMinuteKLineData(StockMinuteKLinePo stockMinuteKLineData) {
         if (null != stockMinuteKLineData && null != stockMinuteKLineData.getKlineData()
-        && !stockMinuteKLineData.getKlineData().isEmpty()) {
+                && !stockMinuteKLineData.getKlineData().isEmpty()) {
             int nodeLen = stockMinuteKLineData.getKlineData().size();
             String[] timeMarkerStrArr = new String[nodeLen];
             String[] barMarkerStrArr = new String[nodeLen];
@@ -315,7 +315,7 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
                 } else {
                     barColors[i] = flatColor;
                 }
-                float dealNum = currentDealNum/100;
+                float dealNum = currentDealNum / 100;
                 barEntryList.add(new BarEntry(i, dealNum));
                 int highPriceCompare = currentPrice.compareTo(highPrice);
                 if (highPriceCompare >= 1) {
@@ -337,7 +337,7 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
                 timeMarkerStrArr[i] = getMarkerViewStr(timeMarkerList);
                 List<Object> barMarkerList = new ArrayList<>();
                 barMarkerList.add(currentTime);
-                barMarkerList.add(Arrays.asList(CHART_LABEL_DEAL_NUM_BAR, String.valueOf((int)dealNum)));
+                barMarkerList.add(Arrays.asList(CHART_LABEL_DEAL_NUM_BAR, String.valueOf((int) dealNum)));
                 barMarkerStrArr[i] = getMarkerViewStr(barMarkerList);
             }
             //设置线图数据
@@ -362,8 +362,8 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
             barChart.notifyDataSetChanged();
             lineChart.postInvalidate();
             barChart.postInvalidate();
-            ((StockMarkerView)lineChart.getMarker()).setMarkerStrArr(timeMarkerStrArr);
-            ((StockMarkerView)barChart.getMarker()).setMarkerStrArr(barMarkerStrArr);
+            ((StockMarkerView) lineChart.getMarker()).setMarkerStrArr(timeMarkerStrArr);
+            ((StockMarkerView) barChart.getMarker()).setMarkerStrArr(barMarkerStrArr);
         }
     }
 
@@ -420,6 +420,7 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
 
     /**
      * 设置价格区间
+     *
      * @param preClosePrice
      * @param highPrice
      * @param lowPrice
@@ -446,6 +447,7 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
 
     /**
      * 线图设置昨日收盘价
+     *
      * @param preClosePrice
      */
     private void setLinePreClosePrice(BigDecimal preClosePrice) {
@@ -455,13 +457,14 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
 
     /**
      * 设置柱状图显示范围
+     *
      * @param highDealNum
      */
     private void setBarChartDealNumScope(Long highDealNum) {
         //设置最小值为0
         barLeftY.setAxisMinimum(0f);
         //设置最大值为分钟最大的交易量
-        barLeftY.setAxisMaximum(highDealNum/100);
+        barLeftY.setAxisMaximum((float) highDealNum / 100);
         //设置左Y轴渲染器
         StockSingleDayMinuteBarYAxisRenderer stockSingleDayMinuteBarYAxisRenderer =
                 (StockSingleDayMinuteBarYAxisRenderer) barChart.getRendererLeftYAxis();
@@ -471,7 +474,7 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
             if (i == 0) {
                 labelArr[i] = "手";
             } else if (i == BAR_Y_LABEL_COUNT - 1) {
-                labelArr[i] = String.valueOf(highDealNum/100);
+                labelArr[i] = String.valueOf(highDealNum / 100);
             } else {
                 labelArr[i] = "";
             }

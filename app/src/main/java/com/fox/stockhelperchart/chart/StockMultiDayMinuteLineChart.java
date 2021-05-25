@@ -20,7 +20,6 @@ import java.util.TreeMap;
 
 import static com.fox.stockhelperchart.BaseStockChart.NO_DATA_STR;
 import static com.fox.stockhelperchart.BaseStockChart.X_NODE_COUNT;
-import static com.fox.stockhelperchart.StockMultiDayMinuteChart.DAY_NUM;
 
 /**
  * @author lusongsong
@@ -77,11 +76,6 @@ public class StockMultiDayMinuteLineChart extends StockMinuteLineChart {
         //设置划线渲染器，并指定需要断开的点
         StockMultiDayMinuteLineChartRenderer stockMultiDayMinuteLineChartRenderer =
                 new StockMultiDayMinuteLineChartRenderer(this, mAnimator, mViewPortHandler);
-        List<Integer> breakPosList = new ArrayList<>(DAY_NUM);
-        for (int i = 0; i < DAY_NUM - 1; i++) {
-            breakPosList.add(X_NODE_COUNT * (i + 1) + 1);
-        }
-        stockMultiDayMinuteLineChartRenderer.setBreakPos(breakPosList);
         setRenderer(stockMultiDayMinuteLineChartRenderer);
     }
 
@@ -101,22 +95,9 @@ public class StockMultiDayMinuteLineChart extends StockMinuteLineChart {
                 new StockMultiDayMinuteLineXAxisRenderer(
                         getViewPortHandler(), xAxis, getTransformer(YAxis.AxisDependency.LEFT)
                 );
-        int[] gradLinePos = new int[DAY_NUM + 1];
-        int[] labelPos = new int[DAY_NUM];
-        TreeMap<Integer, String> labelMap = new TreeMap<>();
-        for (int i = 0; i <= DAY_NUM; i++) {
-            gradLinePos[i] = X_NODE_COUNT * i;
-        }
-        for (int i = 0; i < DAY_NUM; i++) {
-            labelMap.put(X_NODE_COUNT / 2 + X_NODE_COUNT * i, "21/3/1");
-            labelPos[i] = X_NODE_COUNT / 2 + X_NODE_COUNT * i;
-        }
-        stockMultiDayMinuteLineXAxisRenderer.setGradLinePos(gradLinePos);
-        stockMultiDayMinuteLineXAxisRenderer.setLabelPos(labelPos);
         setXAxisRenderer(stockMultiDayMinuteLineXAxisRenderer);
         //设置X轴Label格式器
         StockXAxisFormatter stockXAxisFormatter = new StockXAxisFormatter();
-        stockXAxisFormatter.setLabels(labelMap);
         xAxis.setValueFormatter(stockXAxisFormatter);
     }
 

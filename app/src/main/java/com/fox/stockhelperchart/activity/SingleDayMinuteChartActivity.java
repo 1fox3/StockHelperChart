@@ -2,10 +2,6 @@ package com.fox.stockhelperchart.activity;
 
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.fox.spider.stock.constant.StockConst;
-import com.fox.spider.stock.entity.vo.StockVo;
 import com.fox.stockhelperchart.R;
 import com.fox.stockhelperchart.StockSingleDayMinuteChart;
 import com.fox.stockhelpercommon.entity.stock.po.StockMinuteKLinePo;
@@ -21,7 +17,7 @@ import lombok.SneakyThrows;
  * @author lusongsong
  * @date 2021/2/25 16:40
  */
-public class SingleDayMinuteChartActivity extends AppCompatActivity {
+public class SingleDayMinuteChartActivity extends StockChartBaseActivity {
     @BindView(R.id.stockSingleDayMinuteChart)
     StockSingleDayMinuteChart stockSingleDayMinuteChart;
     /**
@@ -51,7 +47,7 @@ public class SingleDayMinuteChartActivity extends AppCompatActivity {
                         new StockSpiderRealtimeMinuteKLineApi();
                 stockMinuteKLinePo =
                         stockSpiderRealtimeMinuteKLineApi
-                                .realtimeMinuteKLine(new StockVo("603383", StockConst.SM_A));
+                                .realtimeMinuteKLine(SH_TEST_STOCK);
                 stockSingleDayMinuteChart.setStockMinuteKLineData(stockMinuteKLinePo);
             }
         };
