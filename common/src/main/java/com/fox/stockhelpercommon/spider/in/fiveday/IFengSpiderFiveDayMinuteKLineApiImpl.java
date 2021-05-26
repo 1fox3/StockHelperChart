@@ -56,7 +56,7 @@ public class IFengSpiderFiveDayMinuteKLineApiImpl implements StockSpiderFiveDayM
      */
     @Override
     public boolean isSupport(int stockMarket) {
-        return iFengFiveDayMinuteKLineApi.isSupport(stockMarket);
+        return IFengFiveDayMinuteKLineApi.isSupport(stockMarket);
     }
 
     /**

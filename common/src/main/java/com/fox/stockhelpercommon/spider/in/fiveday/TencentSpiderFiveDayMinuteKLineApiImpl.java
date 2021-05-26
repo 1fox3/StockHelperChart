@@ -30,7 +30,7 @@ public class TencentSpiderFiveDayMinuteKLineApiImpl implements StockSpiderFiveDa
     /**
      * 腾讯股票近5个交易日分钟线图数据接口
      */
-    TencentFiveDayMinuteKLineApi tencentFiveDayMinuteKLineApi =
+    private TencentFiveDayMinuteKLineApi tencentFiveDayMinuteKLineApi =
             new TencentFiveDayMinuteKLineApi();
 
     /**
@@ -57,7 +57,7 @@ public class TencentSpiderFiveDayMinuteKLineApiImpl implements StockSpiderFiveDa
      */
     @Override
     public boolean isSupport(int stockMarket) {
-        return tencentFiveDayMinuteKLineApi.isSupport(stockMarket);
+        return TencentFiveDayMinuteKLineApi.isSupport(stockMarket);
     }
 
     /**
