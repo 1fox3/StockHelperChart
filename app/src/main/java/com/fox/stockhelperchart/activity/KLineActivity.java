@@ -2,6 +2,7 @@ package com.fox.stockhelperchart.activity;
 
 import android.os.Bundle;
 
+import com.fox.spider.stock.constant.StockConst;
 import com.fox.stockhelperchart.R;
 import com.fox.stockhelperchart.StockKLineChart;
 
@@ -20,6 +21,7 @@ public class KLineActivity extends StockChartBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kline);
         ButterKnife.bind(KLineActivity.this);
+        stockKLineChart.setDateType(StockConst.DT_DAY);
         stockKLineChart.initChart();
     }
 }

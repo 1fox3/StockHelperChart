@@ -1,14 +1,21 @@
 package com.fox.stockhelperchart;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.fox.spider.stock.constant.StockConst;
+import com.fox.stockhelperchart.adapter.StockKLineBarTypeAdapter;
 import com.fox.stockhelperchart.chart.StockKLineBarCombinedChart;
 import com.fox.stockhelperchart.chart.StockKLineLineCombinedChart;
 import com.fox.stockhelperchart.listener.StockKLineOnChartGestureListener;
@@ -31,18 +38,69 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class StockKLineChart extends BaseStockChart {
+    public static final int KLINE_BAR_TYPE_DEAL_NUM = 0;
+    public static final int KLINE_BAR_TYPE_DEAL_MONEY = 1;
+    public static final int KLINE_BAR_TYPE_MACD = 2;
+    public static final int KLINE_BAR_TYPE_KDJ = 3;
+    public static final int KLINE_BAR_TYPE_RSI = 4;
+    public static final int KLINE_BAR_TYPE_BOLL = 5;
+    /**
+     * 日期类型
+     */
+    List<Integer> kLineSupportDateType = Arrays.asList(
+            StockConst.DT_DAY,
+            StockConst.DT_MONTH,
+            StockConst.DT_MONTH
+    );
+    /**
+     * 复权类型
+     */
+    Map<String, Integer> kLineFqTypeMap = new TreeMap<String, Integer>() {{
+        put("除权", StockConst.SFQ_AFTER);
+        put("前复权", StockConst.SFQ_BEFORE);
+    }};
+
+    /**
+     * 柱状图类型
+     */
+    Map<String, Integer> kLineBarTypeMap = new LinkedHashMap<String, Integer>() {{
+        put("成交量", KLINE_BAR_TYPE_DEAL_NUM);
+        put("成交金额", KLINE_BAR_TYPE_DEAL_MONEY);
+        put("MACD", KLINE_BAR_TYPE_MACD);
+        put("KDJ", KLINE_BAR_TYPE_KDJ);
+        put("RSI", KLINE_BAR_TYPE_RSI);
+        put("BOLL", KLINE_BAR_TYPE_BOLL);
+    }};
 
     @BindView(R.id.stockKLineLineCombinedChart)
     StockKLineLineCombinedChart lineChart;
 
     @BindView(R.id.stockKLineBarCombinedChart)
     StockKLineBarCombinedChart barChart;
+
+    @BindView(R.id.stockKLineBarTypeLV)
+    ListView stockKLineBarTypeLV;
+
+    StockKLineBarTypeAdapter stockKLineBarTypeAdapter;
+
+    @BindView(R.id.stockFQTypeNoTV)
+    TextView stockFQTypeNoTV;
+
+    @BindView(R.id.stockFQTypeBeforeTV)
+    TextView stockFQTypeBeforeTV;
+
+    int dateType = StockConst.DT_DAY;
+    int fqType = StockConst.SFQ_BEFORE;
+    int barType = 0;
 
     public StockKLineChart(Context context) {
         super(context);
@@ -86,6 +144,73 @@ public class StockKLineChart extends BaseStockChart {
                 R.layout.stock_kline_chart, this, true
         );
         ButterKnife.bind(this, view);
+        stockKLineBarTypeAdapter = new StockKLineBarTypeAdapter(getContext(), R.layout.stock_kline_bar_type_item);
+        stockKLineBarTypeAdapter.setStockLineBarTypeList(new ArrayList<>(kLineBarTypeMap.keySet()));
+        stockKLineBarTypeAdapter.setSelectColor(upColor);
+        stockKLineBarTypeLV.setAdapter(stockKLineBarTypeAdapter);
+        stockKLineBarTypeLV.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+        stockKLineBarTypeLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView textView = view.findViewById(R.id.kLineBarTypeItemTV);
+                setBarType(textView.getText().toString());
+                stockKLineBarTypeAdapter.setSelectedPosition(position);
+                stockKLineBarTypeAdapter.notifyDataSetChanged();
+            }
+        });
+        stockFQTypeNoTV.setOnClickListener(getFQTypeOnClickListener());
+        stockFQTypeBeforeTV.setOnClickListener(getFQTypeOnClickListener());
+        stockFQTypeNoTV.callOnClick();
+    }
+
+    /**
+     * 设置日期类型
+     *
+     * @param dtType
+     */
+    public void setDateType(int dtType) {
+        dateType = kLineSupportDateType.contains(dtType) ? dtType : dateType;
+    }
+
+    /**
+     * 设置柱状图类型
+     *
+     * @param barTypeStr
+     */
+    public void setBarType(String barTypeStr) {
+        barType = kLineBarTypeMap.containsKey(barTypeStr) ? kLineBarTypeMap.get(barTypeStr) : barType;
+    }
+
+    /**
+     * 设置复权类型
+     *
+     * @param fqTypeStr
+     */
+    public void setFqType(String fqTypeStr) {
+        fqType = kLineFqTypeMap.containsKey(fqTypeStr) ?
+                kLineFqTypeMap.get(fqTypeStr) : fqType;
+        stockFQTypeNoTV.setTextColor(Color.BLACK);
+        stockFQTypeBeforeTV.setTextColor(Color.BLACK);
+        if (fqType == StockConst.SFQ_AFTER) {
+            stockFQTypeNoTV.setTextColor(upColor);
+        }
+        if (fqType == StockConst.SFQ_BEFORE) {
+            stockFQTypeBeforeTV.setTextColor(upColor);
+        }
+    }
+
+    private OnClickListener getFQTypeOnClickListener() {
+        return new OnClickListener() {
+            /**
+             * Called when a view has been clicked.
+             *
+             * @param v The view that was clicked.
+             */
+            @Override
+            public void onClick(View v) {
+                setFqType((((TextView) v)).getText().toString());
+            }
+        };
     }
 
     /**
@@ -397,7 +522,7 @@ public class StockKLineChart extends BaseStockChart {
 
         int[] colors = new int[stockDataList.size()];
         for (int i = 0; i < dEAs.size(); i++) {
-            int colorIdx =  mACDs.get(i) > 0  ? 0 : 1;
+            int colorIdx = mACDs.get(i) > 0 ? 0 : 1;
             colors[i] = colorArr[colorIdx];
             deaBarEntries.add(new Entry(i, dEAs.get(i)));
             difBarEntries.add(new Entry(i, dIFs.get(i)));
@@ -508,8 +633,8 @@ public class StockKLineChart extends BaseStockChart {
     /**
      * 得到某区间内最高价和最低价
      *
-     * @param a          开始位置 可以为0
-     * @param b          结束位置
+     * @param a 开始位置 可以为0
+     * @param b 结束位置
      * @return
      */
     private Float[] getHighAndLowByK(Integer a, Integer b) {

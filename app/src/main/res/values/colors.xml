@@ -24,4 +24,5 @@
     <color name="ma30">#804000</color>
     <!--高亮线颜色-->
     <color name="highlight">#E9403C</color>
+    <color name="textColor">#010101</color>
 </resources>
