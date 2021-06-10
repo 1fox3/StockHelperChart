@@ -22,6 +22,6 @@ public class KLineActivity extends StockChartBaseActivity {
         setContentView(R.layout.activity_kline);
         ButterKnife.bind(KLineActivity.this);
         stockKLineChart.setDateType(StockConst.DT_DAY);
-        stockKLineChart.initChart();
+        stockKLineChart.initChart(SH_TEST_STOCK);
     }
 }

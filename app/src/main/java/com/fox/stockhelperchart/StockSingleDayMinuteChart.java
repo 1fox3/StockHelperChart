@@ -7,6 +7,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.fox.spider.stock.entity.vo.StockVo;
 import com.fox.stockhelperchart.chart.StockSingleDayMinuteBarChart;
 import com.fox.stockhelperchart.chart.StockSingleDayMinuteLineChart;
 import com.fox.stockhelperchart.formatter.StockPriceFormatter;
@@ -15,6 +16,7 @@ import com.fox.stockhelperchart.renderer.yaxis.StockSingleDayMinuteBarYAxisRende
 import com.fox.stockhelperchart.renderer.yaxis.StockSingleDayMinuteLineYAxisRenderer;
 import com.fox.stockhelpercommon.entity.stock.po.StockMinuteKLineNodePo;
 import com.fox.stockhelpercommon.entity.stock.po.StockMinuteKLinePo;
+import com.fox.stockhelpercommon.spider.out.StockSpiderRealtimeMinuteKLineApi;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -26,8 +28,6 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -36,6 +36,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import lombok.SneakyThrows;
 
 /**
  * 股票分钟力度数据
@@ -76,9 +77,11 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
     /**
      * 初始化图表
      */
-    public void initChart() {
+    public void initChart(StockVo stock) {
         //父类的初始化图表
         super.initChart();
+        //设置股票
+        setStockVo(stock);
         //绑定视图
         bindLayout();
         //设置数据选择监听器
@@ -87,6 +90,8 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
         initLineChart();
         //初始化柱图
         initBarChart();
+        //刷新数据
+        freshData();
     }
 
     /**
@@ -480,5 +485,25 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
             }
         }
         stockSingleDayMinuteBarYAxisRenderer.setLabels(labelArr);
+    }
+
+    /**
+     * 刷新数据
+     */
+    public void freshData() {
+        Runnable stockMinuteKLineRunnable = new Runnable() {
+            @SneakyThrows
+            @Override
+            public void run() {
+                StockSpiderRealtimeMinuteKLineApi stockSpiderRealtimeMinuteKLineApi =
+                        new StockSpiderRealtimeMinuteKLineApi();
+                StockMinuteKLinePo stockMinuteKLinePo =
+                        stockSpiderRealtimeMinuteKLineApi
+                                .realtimeMinuteKLine(stockVo);
+                setStockMinuteKLineData(stockMinuteKLinePo);
+            }
+        };
+        Thread thread = new Thread(stockMinuteKLineRunnable);
+        thread.start();
     }
 }

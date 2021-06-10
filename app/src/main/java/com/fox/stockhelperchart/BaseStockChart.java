@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.fox.spider.stock.entity.vo.StockVo;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 
@@ -139,6 +140,11 @@ public class BaseStockChart extends LinearLayout {
      */
     YAxis barRightY;
 
+    /**
+     * 股票对象
+     */
+    StockVo stockVo;
+
     public BaseStockChart(Context context) {
         super(context);
     }
@@ -177,6 +183,15 @@ public class BaseStockChart extends LinearLayout {
         highlightColor = ContextCompat.getColor(context, R.color.highlight);
     }
 
+
+    /**
+     * 设置股票
+     *
+     * @param stock
+     */
+    public void setStockVo(StockVo stock) {
+        stockVo = stock;
+    }
 
     /**
      * 获取随机值

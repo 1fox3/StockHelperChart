@@ -15,10 +15,12 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.fox.spider.stock.constant.StockConst;
+import com.fox.spider.stock.entity.vo.StockVo;
 import com.fox.stockhelperchart.adapter.StockKLineBarTypeAdapter;
 import com.fox.stockhelperchart.chart.StockKLineBarCombinedChart;
 import com.fox.stockhelperchart.chart.StockKLineLineCombinedChart;
 import com.fox.stockhelperchart.listener.StockKLineOnChartGestureListener;
+import com.fox.stockhelpercommon.spider.out.StockSpiderKLineApi;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -101,6 +103,8 @@ public class StockKLineChart extends BaseStockChart {
     int dateType = StockConst.DT_DAY;
     int fqType = StockConst.SFQ_BEFORE;
     int barType = 0;
+    StockSpiderKLineApi stockSpiderKLineApi = new StockSpiderKLineApi();
+    Thread loadDataThread;
 
     public StockKLineChart(Context context) {
         super(context);
@@ -121,9 +125,11 @@ public class StockKLineChart extends BaseStockChart {
     /**
      * 初始化图表
      */
-    public void initChart() {
+    public void initChart(StockVo stock) {
         //父类的初始化图表
         super.initChart();
+        //设置股票
+        setStockVo(stock);
         //绑定视图
         bindLayout();
         //初始化线图

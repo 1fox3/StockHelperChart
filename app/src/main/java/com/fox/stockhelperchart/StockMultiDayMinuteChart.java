@@ -7,6 +7,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.fox.spider.stock.entity.vo.StockVo;
 import com.fox.stockhelperchart.chart.StockMultiDayMinuteBarChart;
 import com.fox.stockhelperchart.chart.StockMultiDayMinuteLineChart;
 import com.fox.stockhelperchart.formatter.StockPriceFormatter;
@@ -16,9 +17,9 @@ import com.fox.stockhelperchart.renderer.chart.StockMultiDayMinuteLineChartRende
 import com.fox.stockhelperchart.renderer.xaxis.StockMultiDayMinuteLineXAxisRenderer;
 import com.fox.stockhelperchart.renderer.yaxis.StockMultiDayMinuteBarYAxisRenderer;
 import com.fox.stockhelperchart.renderer.yaxis.StockMultiDayMinuteLineYAxisRenderer;
-import com.fox.stockhelperchart.renderer.yaxis.StockSingleDayMinuteBarYAxisRenderer;
 import com.fox.stockhelpercommon.entity.stock.po.StockMinuteKLineNodePo;
 import com.fox.stockhelpercommon.entity.stock.po.StockMinuteKLinePo;
+import com.fox.stockhelpercommon.spider.out.StockSpiderFiveDayMinuteKLineApi;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -40,6 +41,7 @@ import java.util.TreeMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import lombok.SneakyThrows;
 
 /**
  * @author lusongsong
@@ -75,9 +77,11 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
     /**
      * 初始化图表
      */
-    public void initChart() {
+    public void initChart(StockVo stock) {
         //父类的初始化图表
         super.initChart();
+        //设置股票
+        setStockVo(stock);
         //绑定视图
         bindLayout();
         //设置数据选择监听器
@@ -86,6 +90,8 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
         initLineChart();
         //初始化柱图
         initBarChart();
+        //刷新数据
+        freshData();
     }
 
     /**
@@ -582,5 +588,25 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
             }
         }
         stockMultiDayMinuteBarYAxisRenderer.setLabels(labelArr);
+    }
+
+    /**
+     * 刷新数据
+     */
+    public void freshData() {
+        Runnable stockMinuteKLineRunnable = new Runnable() {
+            @SneakyThrows
+            @Override
+            public void run() {
+                StockSpiderFiveDayMinuteKLineApi stockSpiderFiveDayMinuteKLineApi =
+                        new StockSpiderFiveDayMinuteKLineApi();
+                List<StockMinuteKLinePo> stockMinuteKLinePoList =
+                        stockSpiderFiveDayMinuteKLineApi
+                                .fiveDayMinuteKLine(stockVo);
+                setStockMinuteKLineData(stockMinuteKLinePoList);
+            }
+        };
+        Thread thread = new Thread(stockMinuteKLineRunnable);
+        thread.start();
     }
 }
