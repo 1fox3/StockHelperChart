@@ -58,6 +58,10 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
     @BindView(R.id.stockSingleDayMinuteBarChart)
     StockSingleDayMinuteBarChart barChart;
 
+    StockSpiderRealtimeMinuteKLineApi stockSpiderRealtimeMinuteKLineApi =
+            new StockSpiderRealtimeMinuteKLineApi();
+    StockMinuteKLinePo stockMinuteKLinePo;
+
     public StockSingleDayMinuteChart(Context context) {
         super(context);
     }
@@ -495,11 +499,7 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
             @SneakyThrows
             @Override
             public void run() {
-                StockSpiderRealtimeMinuteKLineApi stockSpiderRealtimeMinuteKLineApi =
-                        new StockSpiderRealtimeMinuteKLineApi();
-                StockMinuteKLinePo stockMinuteKLinePo =
-                        stockSpiderRealtimeMinuteKLineApi
-                                .realtimeMinuteKLine(stockVo);
+                stockMinuteKLinePo = stockSpiderRealtimeMinuteKLineApi.realtimeMinuteKLine(stockVo);
                 setStockMinuteKLineData(stockMinuteKLinePo);
             }
         };
