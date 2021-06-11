@@ -20,7 +20,9 @@ import com.fox.spider.stock.util.DateUtil;
 import com.fox.stockhelperchart.adapter.StockKLineBarTypeAdapter;
 import com.fox.stockhelperchart.chart.StockKLineBarCombinedChart;
 import com.fox.stockhelperchart.chart.StockKLineLineCombinedChart;
+import com.fox.stockhelperchart.listener.StockKLineDataVisibleListener;
 import com.fox.stockhelperchart.listener.StockKLineOnChartGestureListener;
+import com.fox.stockhelperchart.renderer.xaxis.StockKLineLineXAxisRenderer;
 import com.fox.stockhelpercommon.entity.stock.po.StockKLineNodePo;
 import com.fox.stockhelpercommon.entity.stock.po.StockKLinePo;
 import com.fox.stockhelpercommon.spider.out.StockSpiderKLineApi;
@@ -54,7 +56,7 @@ import java.util.TreeMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class StockKLineChart extends BaseStockChart {
+public class StockKLineChart extends BaseStockChart implements StockKLineDataVisibleListener {
     public static final int KLINE_BAR_TYPE_DEAL_NUM = 0;
     public static final int KLINE_BAR_TYPE_DEAL_MONEY = 1;
     public static final int KLINE_BAR_TYPE_MACD = 2;
@@ -115,7 +117,9 @@ public class StockKLineChart extends BaseStockChart {
     String loadDataEndDate;
     List<StockKLineNodePo> stockKLineNodePoList = new ArrayList<>();
     boolean totalDataLoaded = false;
-    boolean is_loading_data = false;
+    boolean isLoadingData = false;
+    float beforeDataLen = 70f;
+    float visibleEndPos = 0;
 
     public StockKLineChart(Context context) {
         super(context);
@@ -291,6 +295,8 @@ public class StockKLineChart extends BaseStockChart {
      * 初始化线图
      */
     private void initLineChart() {
+        ((StockKLineLineXAxisRenderer) lineChart.getRendererXAxis())
+                .setStockKLineDataVisibleListener(this);
         //初始化线图X轴
         initLineXAxis();
         //初始化线图左Y轴
@@ -300,7 +306,7 @@ public class StockKLineChart extends BaseStockChart {
     }
 
     private float getStockScaleX() {
-        return stockKLineNodePoList.size() / 70f;
+        return stockKLineNodePoList.size() / beforeDataLen;
     }
 
     /**
@@ -374,6 +380,9 @@ public class StockKLineChart extends BaseStockChart {
         if (null == loadDataThread) {
             setLoadDataThread();
         }
+        if (null != stockKLineNodePoList && stockKLineNodePoList.size() > 0) {
+            beforeDataLen = (float) stockKLineNodePoList.size();
+        }
         //日期范围
         getNextDateScope();
         loadDataThread.start();
@@ -385,23 +394,14 @@ public class StockKLineChart extends BaseStockChart {
     private void setLoadDataThread() {
         loadDataThread = new Thread(
                 () -> {
-                    if (!totalDataLoaded && !is_loading_data) {
-                        is_loading_data = true;
+                    if (!totalDataLoaded && !isLoadingData) {
+                        isLoadingData = true;
                         StockKLinePo stockKLinePo = stockSpiderKLineApi.kLine(
                                 stockVo,
                                 dateType,
                                 fqType,
                                 loadDataStartDate,
                                 loadDataEndDate
-                        );
-                        System.out.println(
-                                Arrays.asList(
-                                        stockVo,
-                                        dateType,
-                                        fqType,
-                                        loadDataStartDate,
-                                        loadDataEndDate
-                                )
                         );
                         if (stockKLinePo != null) {
                             List<StockKLineNodePo> klineData = stockKLinePo.getKlineData();
@@ -412,7 +412,7 @@ public class StockKLineChart extends BaseStockChart {
                                 totalDataLoaded = true;
                             }
                         }
-                        is_loading_data = false;
+                        isLoadingData = false;
                     }
                 }
         );
@@ -422,6 +422,9 @@ public class StockKLineChart extends BaseStockChart {
      * 日期范围
      */
     private void getNextDateScope() {
+        if (isLoadingData || totalDataLoaded) {
+            return;
+        }
         loadDataEndDate = null == loadDataEndDate
                 ?
                 DateUtil.getCurrentDate()
@@ -473,6 +476,18 @@ public class StockKLineChart extends BaseStockChart {
     }
 
     /**
+     * 获取当前可见的结束位置
+     *
+     * @return
+     */
+    private float getVisibleEndPos() {
+        return 0 >= visibleEndPos ?
+                stockKLineNodePoList.size() - 1
+                :
+                stockKLineNodePoList.size() - beforeDataLen + visibleEndPos;
+    }
+
+    /**
      * 设置线图数据
      */
     private void setLineData() {
@@ -485,7 +500,7 @@ public class StockKLineChart extends BaseStockChart {
         lineChart.getXAxis().setAxisMaximum(combinedData.getXMax() + 0.5f);
         lineChart.notifyDataSetChanged();
         //滑动到尾部
-        lineChart.moveViewToX(stockKLineNodePoList.size() - 1);
+        lineChart.moveViewToX(getVisibleEndPos());
     }
 
     /**
@@ -610,7 +625,7 @@ public class StockKLineChart extends BaseStockChart {
         barChart.getXAxis().setAxisMaximum(combinedData.getXMax() + 0.5f);
         barChart.notifyDataSetChanged();
         //滑动到尾部
-        barChart.moveViewToX(stockKLineNodePoList.size() - 1);
+        barChart.moveViewToX(getVisibleEndPos());
         //设置与上边无间隔
         ViewPortHandler viewPortHandler = barChart.getViewPortHandler();
         barChart.setViewPortOffsets(
@@ -1138,5 +1153,13 @@ public class StockKLineChart extends BaseStockChart {
             sum += ((closePrice - ma) * (closePrice - ma));
         }
         return sum;
+    }
+
+    @Override
+    public void dataVisibleScope(float startPos, float endPos) {
+        visibleEndPos = endPos;
+        if (startPos < 20 && startPos > 0) {
+            loadMoreData();
+        }
     }
 }

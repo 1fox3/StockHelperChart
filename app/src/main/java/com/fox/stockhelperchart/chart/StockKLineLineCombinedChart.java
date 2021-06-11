@@ -103,7 +103,7 @@ public class StockKLineLineCombinedChart extends CombinedChart {
         //X轴显示在底部
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         //X轴不显示坐标
-        xAxis.setDrawLabels(false);
+        xAxis.setDrawLabels(true);
         //X轴显示网格线
         xAxis.setDrawGridLines(true);
         //网格虚线
