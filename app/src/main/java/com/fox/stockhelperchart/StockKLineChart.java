@@ -21,6 +21,7 @@ import com.fox.stockhelperchart.adapter.StockKLineBarTypeAdapter;
 import com.fox.stockhelperchart.chart.StockKLineBarCombinedChart;
 import com.fox.stockhelperchart.chart.StockKLineLineCombinedChart;
 import com.fox.stockhelperchart.listener.StockKLineDataVisibleListener;
+import com.fox.stockhelperchart.listener.StockKLineDateLabelListener;
 import com.fox.stockhelperchart.listener.StockKLineOnChartGestureListener;
 import com.fox.stockhelperchart.renderer.xaxis.StockKLineLineXAxisRenderer;
 import com.fox.stockhelpercommon.entity.stock.po.StockKLineNodePo;
@@ -56,7 +57,7 @@ import java.util.TreeMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class StockKLineChart extends BaseStockChart implements StockKLineDataVisibleListener {
+public class StockKLineChart extends BaseStockChart implements StockKLineDataVisibleListener, StockKLineDateLabelListener {
     public static final int KLINE_BAR_TYPE_DEAL_NUM = 0;
     public static final int KLINE_BAR_TYPE_DEAL_MONEY = 1;
     public static final int KLINE_BAR_TYPE_MACD = 2;
@@ -110,7 +111,7 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
 
     int dateType = StockConst.DT_DAY;
     int fqType = StockConst.SFQ_BEFORE;
-    int barType = KLINE_BAR_TYPE_BOLL;
+    int barType = KLINE_BAR_TYPE_DEAL_NUM;
     StockSpiderKLineApi stockSpiderKLineApi = new StockSpiderKLineApi();
     Thread loadDataThread;
     String loadDataStartDate;
@@ -297,6 +298,8 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
     private void initLineChart() {
         ((StockKLineLineXAxisRenderer) lineChart.getRendererXAxis())
                 .setStockKLineDataVisibleListener(this);
+        ((StockKLineLineXAxisRenderer) lineChart.getRendererXAxis())
+                .setStockKLineDateLabelListener(this);
         //初始化线图X轴
         initLineXAxis();
         //初始化线图左Y轴
@@ -1161,5 +1164,14 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
         if (startPos < 20 && startPos > 0) {
             loadMoreData();
         }
+    }
+
+    @Override
+    public String getLabel(float pos) {
+        return DateUtil.dateStrFormatChange(
+                stockKLineNodePoList.get((int)pos).getDt(),
+                DateUtil.DATE_FORMAT_1,
+                DateUtil.DATE_FORMAT_3
+        );
     }
 }

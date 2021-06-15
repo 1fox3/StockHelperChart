@@ -3,6 +3,7 @@ package com.fox.stockhelperchart.renderer.xaxis;
 import android.graphics.Canvas;
 
 import com.fox.stockhelperchart.listener.StockKLineDataVisibleListener;
+import com.fox.stockhelperchart.listener.StockKLineDateLabelListener;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Transformer;
@@ -11,12 +12,17 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 
 public class StockKLineLineXAxisRenderer extends StockXAxisRenderer {
     StockKLineDataVisibleListener stockKLineDataVisibleListener;
+    StockKLineDateLabelListener stockKLineDateLabelListener;
     public StockKLineLineXAxisRenderer(ViewPortHandler viewPortHandler, XAxis xAxis, Transformer trans) {
         super(viewPortHandler, xAxis, trans);
     }
 
     public void setStockKLineDataVisibleListener(StockKLineDataVisibleListener listener) {
         stockKLineDataVisibleListener = listener;
+    }
+
+    public void setStockKLineDateLabelListener(StockKLineDateLabelListener listener) {
+        stockKLineDateLabelListener = listener;
     }
 
     protected void drawLabels(Canvas c, float pos, MPPointF anchor) {
@@ -36,7 +42,7 @@ public class StockKLineLineXAxisRenderer extends StockXAxisRenderer {
         for (int i = 0; i < positions.length; i += 2) {
             float x = positions[i];
             if (mViewPortHandler.isInBoundsX(x)) {
-                String label = mXAxis.getValueFormatter().getFormattedValue(mXAxis.mEntries[i / 2], mXAxis);
+                String label = stockKLineDateLabelListener.getLabel(mXAxis.mEntries[i / 2]);
                 if (i == 0) {
                     startScope = mXAxis.mEntries[i / 2];
                 }
