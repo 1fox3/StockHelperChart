@@ -223,6 +223,11 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
         }
     }
 
+    /**
+     * 监听复权类型切换
+     *
+     * @return
+     */
     private OnClickListener getFQTypeOnClickListener() {
         return new OnClickListener() {
             /**
@@ -232,9 +237,28 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
              */
             @Override
             public void onClick(View v) {
+                int oldFqType = fqType;
                 setFqType((((TextView) v)).getText().toString());
+                if (fqType != oldFqType) {
+                    clearData();
+                    loadMoreData();
+                }
             }
         };
+    }
+
+    /**
+     * 清除数据
+     */
+    private void clearData() {
+        loadDataThread = null;
+        loadDataStartDate = null;
+        loadDataEndDate = null;
+        beforeDataLen = (float) stockKLineNodePoList.size();
+        stockKLineNodePoList = new ArrayList<>();
+        totalDataLoaded = false;
+        isLoadingData = false;
+        visibleEndPos = 0;
     }
 
     /**
