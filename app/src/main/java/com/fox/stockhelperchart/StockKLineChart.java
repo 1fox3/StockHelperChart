@@ -171,6 +171,7 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
         stockKLineBarTypeAdapter = new StockKLineBarTypeAdapter(getContext(), R.layout.stock_kline_bar_type_item);
         stockKLineBarTypeAdapter.setStockLineBarTypeList(new ArrayList<>(kLineBarTypeMap.keySet()));
         stockKLineBarTypeAdapter.setSelectColor(upColor);
+        stockKLineBarTypeAdapter.setSelectedPosition(barType);
         stockKLineBarTypeLV.setAdapter(stockKLineBarTypeAdapter);
         stockKLineBarTypeLV.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         stockKLineBarTypeLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -178,8 +179,7 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = view.findViewById(R.id.kLineBarTypeItemTV);
                 setBarType(textView.getText().toString());
-                stockKLineBarTypeAdapter.setSelectedPosition(position);
-                stockKLineBarTypeAdapter.notifyDataSetChanged();
+                switchBarDataType();
             }
         });
         stockFQTypeNoTV.setOnClickListener(getFQTypeOnClickListener());
@@ -350,6 +350,14 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
         initBarLeftYAxis();
         //初始化柱图右Y轴
         initBarRightYAxis();
+        kLineBarTypeMap.keySet().size();
+        barChart.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                barType = barType < kLineBarTypeMap.keySet().size() - 1 ? ++barType : 0;
+                switchBarDataType();
+            }
+        });
     }
 
     /**
@@ -637,6 +645,18 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
                 viewPortHandler.offsetRight(),
                 viewPortHandler.offsetBottom()
         );
+    }
+
+    /**
+     * 更改柱图数据
+     */
+    private void switchBarDataType() {
+        CombinedData combinedData = getBarCombinedData();
+        barChart.setData(combinedData);
+        barChart.notifyDataSetChanged();
+        barChart.invalidate();
+        stockKLineBarTypeAdapter.setSelectedPosition(barType);
+        stockKLineBarTypeAdapter.notifyDataSetChanged();
     }
 
     /**
