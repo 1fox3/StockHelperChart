@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 
 import com.fox.stockhelperchart.R;
 import com.fox.stockhelperchart.listener.StockKLineTouchListener;
+import com.fox.stockhelperchart.markerview.StockMarkerView;
 import com.fox.stockhelperchart.renderer.chart.StockKLineLineCombinedChartRenderer;
 import com.fox.stockhelperchart.renderer.xaxis.StockKLineLineXAxisRenderer;
 import com.fox.stockhelperchart.renderer.yaxis.StockKLineLineYAxisRenderer;
@@ -71,6 +72,11 @@ public class StockKLineLineCombinedChart extends CombinedChart {
         setDescription(description);
         //不显示数据集合名称
         getLegend().setEnabled(false);
+        //设置提示
+        StockMarkerView stockMarkerView =
+                new StockMarkerView(getContext(), R.layout.markerview_str);
+        stockMarkerView.setChartView(this);
+        setMarker(stockMarkerView);
         //设置渲染器
         setRenderer(
                 new StockKLineLineCombinedChartRenderer(this, mAnimator, mViewPortHandler)

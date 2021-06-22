@@ -22,7 +22,9 @@ import com.fox.stockhelperchart.chart.StockKLineBarCombinedChart;
 import com.fox.stockhelperchart.chart.StockKLineLineCombinedChart;
 import com.fox.stockhelperchart.listener.StockKLineDataVisibleListener;
 import com.fox.stockhelperchart.listener.StockKLineDateLabelListener;
+import com.fox.stockhelperchart.listener.StockKLineMarkerViewTextListener;
 import com.fox.stockhelperchart.listener.StockKLineOnChartGestureListener;
+import com.fox.stockhelperchart.markerview.StockMarkerView;
 import com.fox.stockhelperchart.renderer.xaxis.StockKLineLineXAxisRenderer;
 import com.fox.stockhelpercommon.entity.stock.po.StockKLineNodePo;
 import com.fox.stockhelpercommon.entity.stock.po.StockKLinePo;
@@ -57,7 +59,7 @@ import java.util.TreeMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class StockKLineChart extends BaseStockChart implements StockKLineDataVisibleListener, StockKLineDateLabelListener {
+public class StockKLineChart extends BaseStockChart implements StockKLineDataVisibleListener, StockKLineDateLabelListener, StockKLineMarkerViewTextListener {
     public static final int KLINE_BAR_TYPE_DEAL_NUM = 0;
     public static final int KLINE_BAR_TYPE_DEAL_MONEY = 1;
     public static final int KLINE_BAR_TYPE_MACD = 2;
@@ -158,6 +160,8 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
         setOnChartGestureListener();
         //加载数据
         loadMoreData();
+        ((StockMarkerView) lineChart.getMarker()).setStockKLineMarkerViewTextListener(this, "line");
+        ((StockMarkerView) barChart.getMarker()).setStockKLineMarkerViewTextListener(this, "bar");
     }
 
     /**
@@ -1213,6 +1217,31 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
     @Override
     public String getLabel(float pos) {
         return DateUtil.dateStrFormatChange(
+                stockKLineNodePoList.get((int)pos).getDt(),
+                DateUtil.DATE_FORMAT_1,
+                DateUtil.DATE_FORMAT_3
+        );
+    }
+
+    @Override
+    public String getMarkerViewText(float pos, String sign) {
+        if ("line".equals(sign)) {
+            return getLineTextViewText(pos);
+        } else {
+            return getBarTextViewText(pos);
+        }
+    }
+
+    private String getLineTextViewText(float pos) {
+        return "line：" + DateUtil.dateStrFormatChange(
+                stockKLineNodePoList.get((int)pos).getDt(),
+                DateUtil.DATE_FORMAT_1,
+                DateUtil.DATE_FORMAT_3
+        );
+    }
+
+    private String getBarTextViewText(float pos) {
+        return "bar：" + DateUtil.dateStrFormatChange(
                 stockKLineNodePoList.get((int)pos).getDt(),
                 DateUtil.DATE_FORMAT_1,
                 DateUtil.DATE_FORMAT_3

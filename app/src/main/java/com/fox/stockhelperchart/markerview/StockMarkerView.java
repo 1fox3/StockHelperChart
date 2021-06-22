@@ -2,10 +2,12 @@ package com.fox.stockhelperchart.markerview;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.widget.TextView;
 
 import com.fox.stockhelperchart.R;
+import com.fox.stockhelperchart.listener.StockKLineMarkerViewTextListener;
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.DataSet;
@@ -24,6 +26,11 @@ public class StockMarkerView extends MarkerView {
      * 提示文案数组
      */
     String[] markerStrArr = null;
+    /**
+     * 提示文案回调
+     */
+    StockKLineMarkerViewTextListener stockKLineMarkerViewTextListener = null;
+    String sign = "";
     /**
      * 提示文案的显示组件
      */
@@ -49,21 +56,33 @@ public class StockMarkerView extends MarkerView {
         this.markerStrArr = markerStrArr;
     }
 
+    /**
+     * 设置提示文案回调
+     *
+     * @param stockKLineMarkerViewTextListener
+     */
+    public void setStockKLineMarkerViewTextListener(StockKLineMarkerViewTextListener stockKLineMarkerViewTextListener, String sign) {
+        this.stockKLineMarkerViewTextListener = stockKLineMarkerViewTextListener;
+        this.sign = sign;
+    }
+
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
         String markerViewText = "";
-        if (null == markerStrArr) {
+        if (null != markerStrArr && markerStrArr.length > 0) {
+            markerViewText = markerStrArr[(int) e.getX()];
+        } else if (null != stockKLineMarkerViewTextListener) {
+            markerViewText = stockKLineMarkerViewTextListener.getMarkerViewText(e.getX(), sign);
+        } else {
             ChartData chartData = (ChartData) getChartView().getData();
             int setCount = chartData.getDataSetCount();
             for (int i = 0; i < setCount; i++) {
                 DataSet dataSet = (DataSet) chartData.getDataSetByIndex(i);
                 markerViewText += dataSet.getLabel() + "" + dataSet.getEntryForIndex((int) e.getX()).getY();
             }
-        } else {
-            markerViewText = markerStrArr[(int) e.getX()];
         }
-
         markerViewStrTV.setText(markerViewText);
+        super.refreshContent(e, highlight);
     }
 
     @Override
