@@ -12,110 +12,73 @@ import com.github.mikephil.charting.listener.OnChartGestureListener;
  * 股票K线图设置操作同步
  */
 public class StockKLineOnChartGestureListener implements OnChartGestureListener {
+    private static final String TAG = StockKLineOnChartGestureListener.class.getSimpleName();
     private Chart srcChart;
     private Chart[] dstCharts;
+    private CoupleClick coupleClick;
+
+    public void setCoupleClick(CoupleClick coupleClick) {
+        this.coupleClick = coupleClick;
+    }
+
+    public interface CoupleClick {
+        void singleClickListener();
+    }
 
     public StockKLineOnChartGestureListener(Chart srcChart, Chart[] dstCharts) {
         this.srcChart = srcChart;
         this.dstCharts = dstCharts;
     }
 
-    /**
-     * Callbacks when a touch-gesture has started on the chart (ACTION_DOWN)
-     *
-     * @param me
-     * @param lastPerformedGesture
-     */
     @Override
     public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
         syncCharts();
     }
 
-    /**
-     * Callbacks when a touch-gesture has ended on the chart (ACTION_UP, ACTION_CANCEL)
-     *
-     * @param me
-     * @param lastPerformedGesture
-     */
     @Override
     public void onChartGestureEnd(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
+        if (dstCharts == null) {
+            return;
+        }
         syncCharts();
-        //取消高亮显示
         if (lastPerformedGesture != ChartTouchListener.ChartGesture.SINGLE_TAP) {
             srcChart.highlightValue(null,true);
         }
     }
 
-    /**
-     * Callbacks when the chart is longpressed.
-     *
-     * @param me
-     */
     @Override
     public void onChartLongPressed(MotionEvent me) {
         syncCharts();
     }
 
-    /**
-     * Callbacks when the chart is double-tapped.
-     *
-     * @param me
-     */
     @Override
     public void onChartDoubleTapped(MotionEvent me) {
         syncCharts();
     }
 
-    /**
-     * Callbacks when the chart is single-tapped.
-     *
-     * @param me
-     */
     @Override
     public void onChartSingleTapped(MotionEvent me) {
+        if (coupleClick != null) {
+            coupleClick.singleClickListener();
+        }
         syncCharts();
     }
 
-    /**
-     * Callbacks then a fling gesture is made on the chart.
-     *
-     * @param me1
-     * @param me2
-     * @param velocityX
-     * @param velocityY
-     */
     @Override
     public void onChartFling(MotionEvent me1, MotionEvent me2, float velocityX, float velocityY) {
         syncCharts();
     }
 
-    /**
-     * Callbacks when the chart is scaled / zoomed via pinch zoom / double-tap gesture.
-     *
-     * @param me
-     * @param scaleX scalefactor on the x-axis
-     * @param scaleY scalefactor on the y-axis
-     */
     @Override
     public void onChartScale(MotionEvent me, float scaleX, float scaleY) {
         syncCharts();
     }
 
-    /**
-     * Callbacks when the chart is moved / translated via drag gesture.
-     *
-     * @param me
-     * @param dX translation distance on the x-axis
-     * @param dY translation distance on the y-axis
-     */
     @Override
     public void onChartTranslate(MotionEvent me, float dX, float dY) {
         syncCharts();
     }
 
-    /**
-     * 同步图表
-     */
     public void syncCharts() {
         if (dstCharts == null) {
             return;

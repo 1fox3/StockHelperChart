@@ -315,8 +315,18 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
         lineChart.setOnChartGestureListener(
                 new StockKLineOnChartGestureListener(lineChart, new Chart[]{barChart})
         );
+        StockKLineOnChartGestureListener barStockKLineOnChartGestureListener =
+                new StockKLineOnChartGestureListener(barChart, new Chart[]{lineChart});
+        barStockKLineOnChartGestureListener.setCoupleClick(
+                new StockKLineOnChartGestureListener.CoupleClick() {
+                    @Override
+                    public void singleClickListener() {
+                        barType = barType < kLineBarTypeMap.keySet().size() - 1 ? ++barType : 0;
+                        switchBarDataType();
+                    }
+                });
         barChart.setOnChartGestureListener(
-                new StockKLineOnChartGestureListener(barChart, new Chart[]{lineChart})
+                barStockKLineOnChartGestureListener
         );
     }
 
@@ -379,13 +389,6 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
         //初始化柱图右Y轴
         initBarRightYAxis();
         kLineBarTypeMap.keySet().size();
-        barChart.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                barType = barType < kLineBarTypeMap.keySet().size() - 1 ? ++barType : 0;
-                switchBarDataType();
-            }
-        });
     }
 
     /**
@@ -730,7 +733,7 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
             colors[i] = colorArr[colorIdx];
             i++;
         }
-        BarDataSet barDataSet = new BarDataSet(barEntries, "柱图");
+        BarDataSet barDataSet = new BarDataSet(barEntries, "成交量");
         barDataSet.setColors(colors);
         barDataSet.setDrawValues(false);
         //设置数值选择是的颜色
@@ -765,7 +768,7 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
             colors[i] = colorArr[colorIdx];
             i++;
         }
-        BarDataSet barDataSet = new BarDataSet(barEntries, "柱图");
+        BarDataSet barDataSet = new BarDataSet(barEntries, "成交金额");
         barDataSet.setColors(colors);
         barDataSet.setDrawValues(false);
         //设置数值选择是的颜色
@@ -830,7 +833,7 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
             madcBarEntries.add(new BarEntry(i, mACDs.get(i)));
         }
 
-        BarDataSet barDataSet = new BarDataSet(madcBarEntries, "柱图");
+        BarDataSet barDataSet = new BarDataSet(madcBarEntries, "MACD");
         barDataSet.setDrawValues(false);
         //设置数值选择是的颜色
         barDataSet.setHighLightColor(ContextCompat.getColor(getContext(), R.color.stockUp));
@@ -1217,12 +1220,19 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
     @Override
     public String getLabel(float pos) {
         return DateUtil.dateStrFormatChange(
-                stockKLineNodePoList.get((int)pos).getDt(),
+                stockKLineNodePoList.get((int) pos).getDt(),
                 DateUtil.DATE_FORMAT_1,
                 DateUtil.DATE_FORMAT_3
         );
     }
 
+    /**
+     * 获取提示文案
+     *
+     * @param pos
+     * @param sign
+     * @return
+     */
     @Override
     public String getMarkerViewText(float pos, String sign) {
         if ("line".equals(sign)) {
@@ -1232,19 +1242,68 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
         }
     }
 
+    /**
+     * 获取线图提示文案
+     *
+     * @param pos
+     * @return
+     */
     private String getLineTextViewText(float pos) {
-        return "line：" + DateUtil.dateStrFormatChange(
-                stockKLineNodePoList.get((int)pos).getDt(),
-                DateUtil.DATE_FORMAT_1,
-                DateUtil.DATE_FORMAT_3
-        );
+        StockKLineNodePo stockKLineNodePo = stockKLineNodePoList.get((int) pos);
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(getLabel(pos));
+        stringBuffer.append(" ");
+        stringBuffer.append("收:");
+        stringBuffer.append(stockKLineNodePo.getClosePrice());
+        stringBuffer.append(" ");
+        CombinedData combinedData = lineChart.getCombinedData();
+        LineData lineData = combinedData.getLineData();
+        for (int i = 0; i < lineData.getDataSetCount(); i++) {
+            LineDataSet lineDataSet = (LineDataSet) lineData.getDataSetByIndex(i);
+            List<Entry> entryList = lineDataSet.getEntriesForXValue(pos);
+            if (entryList.size() > 0) {
+                stringBuffer.append(lineDataSet.getLabel());
+                stringBuffer.append(":");
+                stringBuffer.append(entryList.get(0).getY());
+                stringBuffer.append(" ");
+            }
+        }
+        return stringBuffer.toString();
     }
 
+    /**
+     * 获取柱图提示文案
+     *
+     * @param pos
+     * @return
+     */
     private String getBarTextViewText(float pos) {
-        return "bar：" + DateUtil.dateStrFormatChange(
-                stockKLineNodePoList.get((int)pos).getDt(),
-                DateUtil.DATE_FORMAT_1,
-                DateUtil.DATE_FORMAT_3
-        );
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(getLabel(pos));
+        stringBuffer.append(" ");
+        CombinedData combinedData = barChart.getCombinedData();
+        BarData barData = combinedData.getBarData();
+        for (int i = 0; i < barData.getDataSetCount(); i++) {
+            BarDataSet barDataSet = (BarDataSet) barData.getDataSetByIndex(i);
+            List<BarEntry> entryList = barDataSet.getEntriesForXValue(pos);
+            if (entryList.size() > 0) {
+                stringBuffer.append(barDataSet.getLabel());
+                stringBuffer.append(":");
+                stringBuffer.append(entryList.get(0).getY());
+                stringBuffer.append(" ");
+            }
+        }
+        LineData lineData = combinedData.getLineData();
+        for (int i = 0; i < lineData.getDataSetCount(); i++) {
+            LineDataSet lineDataSet = (LineDataSet) lineData.getDataSetByIndex(i);
+            List<Entry> entryList = lineDataSet.getEntriesForXValue(pos);
+            if (entryList.size() > 0) {
+                stringBuffer.append(lineDataSet.getLabel());
+                stringBuffer.append(":");
+                stringBuffer.append(entryList.get(0).getY());
+                stringBuffer.append(" ");
+            }
+        }
+        return stringBuffer.toString();
     }
 }
