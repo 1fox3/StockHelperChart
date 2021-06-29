@@ -34,8 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import lombok.SneakyThrows;
 
 /**
@@ -48,14 +46,11 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
     /**
      * 分钟线图数据
      */
-    @BindView(R.id.stockSingleDayMinuteLineChart)
     StockSingleDayMinuteLineChart lineChart;
-
 
     /**
      * 分钟柱图数据
      */
-    @BindView(R.id.stockSingleDayMinuteBarChart)
     StockSingleDayMinuteBarChart barChart;
 
     StockSpiderRealtimeMinuteKLineApi stockSpiderRealtimeMinuteKLineApi =
@@ -105,7 +100,8 @@ public class StockSingleDayMinuteChart extends BaseStockChart {
         View view = LayoutInflater.from(getContext()).inflate(
                 R.layout.stock_single_day_minute_chart, this, true
         );
-        ButterKnife.bind(this, view);
+        lineChart = findViewById(R.id.stockSingleDayMinuteLineChart);
+        barChart = findViewById(R.id.stockSingleDayMinuteBarChart);
     }
 
     /**

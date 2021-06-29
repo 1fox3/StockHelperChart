@@ -39,8 +39,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import lombok.SneakyThrows;
 
 /**
@@ -48,10 +46,8 @@ import lombok.SneakyThrows;
  * @date 2021/3/26 18:07
  */
 public class StockMultiDayMinuteChart extends BaseStockChart {
-    @BindView(R.id.stockMultiDayMinuteLineChart)
     StockMultiDayMinuteLineChart lineChart;
 
-    @BindView(R.id.stockMultiDayMinuteBarChart)
     StockMultiDayMinuteBarChart barChart;
 
     StockSpiderFiveDayMinuteKLineApi stockSpiderFiveDayMinuteKLineApi =
@@ -106,7 +102,8 @@ public class StockMultiDayMinuteChart extends BaseStockChart {
         View view = LayoutInflater.from(getContext()).inflate(
                 R.layout.stock_multi_day_minute_chart, this, true
         );
-        ButterKnife.bind(this, view);
+        lineChart = findViewById(R.id.stockMultiDayMinuteLineChart);
+        barChart = findViewById(R.id.stockMultiDayMinuteBarChart);
     }
 
     /**

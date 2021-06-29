@@ -56,9 +56,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class StockKLineChart extends BaseStockChart implements StockKLineDataVisibleListener, StockKLineDateLabelListener, StockKLineMarkerViewTextListener {
     public static final int KLINE_BAR_TYPE_DEAL_NUM = 0;
     public static final int KLINE_BAR_TYPE_DEAL_MONEY = 1;
@@ -94,21 +91,16 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
         put("BOLL", KLINE_BAR_TYPE_BOLL);
     }};
 
-    @BindView(R.id.stockKLineLineCombinedChart)
     StockKLineLineCombinedChart lineChart;
 
-    @BindView(R.id.stockKLineBarCombinedChart)
     StockKLineBarCombinedChart barChart;
 
-    @BindView(R.id.stockKLineBarTypeLV)
     ListView stockKLineBarTypeLV;
 
     StockKLineBarTypeAdapter stockKLineBarTypeAdapter;
 
-    @BindView(R.id.stockFQTypeNoTV)
     TextView stockFQTypeNoTV;
 
-    @BindView(R.id.stockFQTypeBeforeTV)
     TextView stockFQTypeBeforeTV;
 
     int dateType = StockConst.DT_DAY;
@@ -171,7 +163,12 @@ public class StockKLineChart extends BaseStockChart implements StockKLineDataVis
         View view = LayoutInflater.from(getContext()).inflate(
                 R.layout.stock_kline_chart, this, true
         );
-        ButterKnife.bind(this, view);
+        lineChart = findViewById(R.id.stockKLineLineCombinedChart);
+        barChart = findViewById(R.id.stockKLineBarCombinedChart);
+        stockKLineBarTypeLV = findViewById(R.id.stockKLineBarTypeLV);
+        stockFQTypeNoTV = findViewById(R.id.stockFQTypeNoTV);
+        stockFQTypeBeforeTV = findViewById(R.id.stockFQTypeBeforeTV);
+
         stockKLineBarTypeAdapter = new StockKLineBarTypeAdapter(getContext(), R.layout.stock_kline_bar_type_item);
         stockKLineBarTypeAdapter.setStockLineBarTypeList(new ArrayList<>(kLineBarTypeMap.keySet()));
         stockKLineBarTypeAdapter.setSelectColor(upColor);

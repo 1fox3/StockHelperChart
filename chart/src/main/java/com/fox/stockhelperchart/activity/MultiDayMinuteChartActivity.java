@@ -5,10 +5,6 @@ import android.os.Bundle;
 import com.fox.stockhelperchart.R;
 import com.fox.stockhelperchart.StockMultiDayMinuteChart;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-
 /**
  * 对天分钟线图
  *
@@ -16,14 +12,13 @@ import butterknife.ButterKnife;
  * @date 2021/2/25 16:41
  */
 public class MultiDayMinuteChartActivity extends StockChartBaseActivity {
-    @BindView(R.id.stockMultiDayMinuteChart)
     StockMultiDayMinuteChart stockMultiDayMinuteChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_five_day_kline);
-        ButterKnife.bind(MultiDayMinuteChartActivity.this);
+        stockMultiDayMinuteChart = findViewById(R.id.stockMultiDayMinuteChart);
         stockMultiDayMinuteChart.initChart(SH_TEST_STOCK);
     }
 }

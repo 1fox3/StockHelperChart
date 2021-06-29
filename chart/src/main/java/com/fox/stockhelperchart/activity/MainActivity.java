@@ -9,46 +9,47 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.fox.stockhelperchart.R;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     /**
      * 单日分钟K线图按钮
      */
-    @BindView(R.id.minuteKLineBtn)
     Button minuteKLineBtn;
     /**
      * 5日K线图按钮
      */
-    @BindView(R.id.fiveDayKLineBtn)
     Button fiveDayKLineBtn;
     /**
      * K线图按钮
      */
-    @BindView(R.id.kLineBtn)
     Button kLineBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        minuteKLineBtn = findViewById(R.id.minuteKLineBtn);
+        fiveDayKLineBtn = findViewById(R.id.fiveDayKLineBtn);
+        kLineBtn = findViewById(R.id.kLineBtn);
+        minuteKLineBtn.setOnClickListener(this);
+        fiveDayKLineBtn.setOnClickListener(this);
+        kLineBtn.setOnClickListener(this);
     }
 
-    @OnClick({R.id.minuteKLineBtn, R.id.fiveDayKLineBtn, R.id.kLineBtn})
-    public void onViewClicked(View view) {
+    /**
+     * Called when a view has been clicked.
+     *
+     * @param v The view that was clicked.
+     */
+    @Override
+    public void onClick(View v) {
         Class desClass = null;
-        switch (view.getId()) {
-            case R.id.minuteKLineBtn:
-                desClass = SingleDayMinuteChartActivity.class;
-                break;
-            case R.id.fiveDayKLineBtn:
-                desClass = MultiDayMinuteChartActivity.class;
-                break;
-            default:
-                desClass = KLineActivity.class;
+        int id = v.getId();
+        if (id == R.id.minuteKLineBtn) {
+            desClass = SingleDayMinuteChartActivity.class;
+        } else if (id == R.id.fiveDayKLineBtn) {
+            desClass = MultiDayMinuteChartActivity.class;
+        } else {
+            desClass = KLineActivity.class;
         }
         startActivity(new Intent(MainActivity.this, desClass));
     }
